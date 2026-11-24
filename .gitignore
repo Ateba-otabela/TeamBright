@@ -1,5 +1,32 @@
-# Logs
-logs
+# ─── Dependencies ─────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Build outputs ────────────────────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+out/
+.output/
+
+# ─── Git submodules (heavy, managed separately) ───────────────────────────────
+.gitmodules
+# Individual submodule dirs — add paths here as needed, e.g.:
+# vendor/
+# packages/external/
+
+# ─── Environment & secrets ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+secrets/
+
+# ─── Logs & debug ─────────────────────────────────────────────────────────────
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,18 +34,53 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# ─── Cache & temp ─────────────────────────────────────────────────────────────
+.cache/
+.tmp/
+.temp/
 *.local
+.vite/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
 
-# Editor directories and files
+# ─── Testing ──────────────────────────────────────────────────────────────────
+coverage/
+*.lcov
+.nyc_output/
+test-results/
+playwright-report/
+
+# ─── OS-generated files ───────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ─── IDE / Editor ─────────────────────────────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/settings.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+.project
+.classpath
+
+# ─── Package manager locks (keep only one) ────────────────────────────────────
+# Uncomment the ones you do NOT use:
+# yarn.lock
+# pnpm-lock.yaml
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+*.zip
+*.tar.gz
+*.rar
+storybook-static/
