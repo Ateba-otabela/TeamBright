@@ -13,7 +13,7 @@ export const translations = {
     upload: 'Upload Song', uploadDetail: 'Direct B2C & EPK', diagnosis: 'AI Diagnosis', diagnosisDetail: 'Compare Hit Scores', split: 'Split Contract', splitDetail: 'PIN-signed MoMo splits', broadcast: 'Phone Broadcast', broadcastDetail: 'DJ, radio & TV destinations',
     earnings: 'Total Direct Earnings (Mo)', sales: 'Direct B2C Plays & Sales', spins: 'Verified DJ Spins', bountiesMetric: 'B2B Bounties & Bookings',
     revenueTitle: 'Direct Revenue Over Time (XAF)', revenueDetail: 'Comparing B2C fan sales & tickets vs. B2B bounties & direct bookings (Last 30 Days)',
-    nextBrief: 'Next Track Brief', inspect: 'Inspect Diagnosis', demoUpload: 'Demo upload flow', demoAnalysis: 'Demo/mock analysis', demoContract: 'Demo contract only', demoBroadcast: 'Sample destinations • Demo submission',
+    nextBrief: 'Next Track Brief', inspect: 'Inspect Diagnosis', uploadFlow: 'Upload a track', analysisFlow: 'Track analysis', contractFlow: 'Split contract', broadcastFlow: 'Broadcast request',
   },
   fr: {
     role: 'Rôle', artist: 'Artiste', dj: 'DJ', collaborator: 'Collaborateur', promoter: 'Promoteur', fan: 'Fan', admin: 'Admin',
@@ -23,7 +23,7 @@ export const translations = {
     upload: 'Téléverser un son', uploadDetail: 'B2C direct & EPK', diagnosis: 'Diagnostic IA', diagnosisDetail: 'Comparer les scores', split: 'Contrat de partage', splitDetail: 'Partages MoMo par PIN', broadcast: 'Diffusion téléphonique', broadcastDetail: 'DJ, radio et télévision',
     earnings: 'Revenus directs totaux (mois)', sales: 'Lectures et ventes B2C directes', spins: 'Passages DJ vérifiés', bountiesMetric: 'Primes et réservations B2B',
     revenueTitle: 'Revenus directs dans le temps (XAF)', revenueDetail: 'Comparaison ventes/billets B2C avec primes/réservations B2B (30 derniers jours)',
-    nextBrief: 'Prochain plan de titre', inspect: 'Voir le diagnostic', demoUpload: 'Flux de téléversement démo', demoAnalysis: 'Analyse fictive/démo', demoContract: 'Contrat démo uniquement', demoBroadcast: 'Destinations exemple • Soumission démo',
+    nextBrief: 'Prochain plan de titre', inspect: 'Voir le diagnostic', uploadFlow: 'Téléverser un morceau', analysisFlow: 'Analyse du morceau', contractFlow: 'Contrat de partage', broadcastFlow: 'Demande de diffusion',
   },
 }
 
@@ -37,11 +37,7 @@ export function DashboardProvider({ children }) {
   const [walletBalance, setWalletBalance] = useState(() => Number(localStorage.getItem('camerhits-wallet') || 284650))
   const [transactions, setTransactions] = useState(() => {
     const saved = localStorage.getItem('camerhits-transactions')
-    return saved ? JSON.parse(saved) : [
-      { id: 1, date: '2026-11-22', type: 'Deposit', typeFr: 'Dépôt', destination: 'MTN MoMo', amount: 120000, status: 'Demo completed', statusFr: 'Démo terminée' },
-      { id: 2, date: '2026-11-20', type: 'DJ / service funding', typeFr: 'Financement DJ / service', destination: 'Hit FM Cameroon', amount: 15000, status: 'Demo completed', statusFr: 'Démo terminée' },
-      { id: 3, date: '2026-11-18', type: 'Withdrawal', typeFr: 'Retrait', destination: '+237 •• •• 650', amount: 50000, status: 'Demo completed', statusFr: 'Démo terminée' },
-    ]
+    return saved ? JSON.parse(saved).filter((item) => !/demo|démo/i.test(`${item.status || ''} ${item.statusFr || ''}`)) : []
   })
 
   const refreshOverview = useCallback(async (isActive = () => true) => {
@@ -89,13 +85,6 @@ export function DashboardProvider({ children }) {
   useEffect(() => { localStorage.setItem('camerhits-notifications', JSON.stringify(notifications)) }, [notifications])
   useEffect(() => { localStorage.setItem('camerhits-wallet', String(walletBalance)) }, [walletBalance])
   useEffect(() => { localStorage.setItem('camerhits-transactions', JSON.stringify(transactions)) }, [transactions])
-
-  const submitDemoTransaction = ({ type, amount, destination, fee, note }) => {
-    const typeMap = type === 'add' ? ['Deposit', 'Dépôt'] : type === 'withdraw' ? ['Withdrawal', 'Retrait'] : ['DJ / service funding', 'Financement DJ / service']
-    const date = new Date().toISOString().slice(0, 10)
-    setTransactions((items) => [{ id: Date.now(), date, type: typeMap[0], typeFr: typeMap[1], destination, amount, status: 'Demo completed', statusFr: 'Démo terminée', fee, note }, ...items])
-    setWalletBalance((balance) => type === 'add' ? balance + amount : Math.max(0, balance - amount - fee))
-  }
 
   const value = useMemo(() => ({
     language,

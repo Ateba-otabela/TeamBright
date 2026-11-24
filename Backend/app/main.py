@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -6,12 +7,14 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.db import Base, engine
 from app.errors import install_error_handlers, error_payload
 from app.routers import auth, users, profiles, verification, directory, follows, admin
 from app.routers import analyzer, broadcast, canary_advisor, events, songs, ticketing
+from app.routers import split_contracts
 from app.security import SystemClock
 from migrations.upgrade_events_tickets import upgrade as upgrade_events_tickets
 from migrations.upgrade_broadcast import upgrade as upgrade_broadcast
@@ -38,6 +41,20 @@ app = FastAPI(
     ),
     version="1.0.0",
     lifespan=lifespan,
+)
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+    ).split(",")
+    if origin.strip()
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
 app.state.clock = SystemClock()
 app.state.database_engine = engine
@@ -102,6 +119,7 @@ async def unhandled_exception(request: Request, exc: Exception):
     )
 
 app.include_router(auth.router)
+app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router)
 app.include_router(profiles.router)
 app.include_router(verification.router)
@@ -114,6 +132,8 @@ app.include_router(events.router)
 app.include_router(ticketing.router)
 app.include_router(songs.router)
 app.include_router(broadcast.router)
+app.include_router(split_contracts.router)
+app.include_router(split_contracts.router, prefix="/api/v1")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
