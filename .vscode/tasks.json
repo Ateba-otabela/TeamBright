@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Import Bantu app",
+			"type": "shell",
+			"command": "C:/Users/BHGJJ/AppData/Local/Programs/Python/Python313/python.exe",
+			"args": [
+				"-c",
+				"import sys; sys.path.insert(0, 'Backend'); from app.main import app; app.state.clock.now(); print('APP_IMPORT_OK')"
+			],
+			"isBackground": false
+		}
+	]
+}
