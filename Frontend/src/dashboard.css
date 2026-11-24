@@ -1,13 +1,39 @@
 :root {
-  --primary: #F4C430;
-  --on-primary: #1A1607;
-  --accent-tint: #382D12;
-  --light-surface: #F5F7F6;
-  --dark-surface: #0B1020;
-  --dark-card: #121A30;
-  --dark-container: #192442;
+  --brand-gold: #F5B83D;
+  --brand-navy: #0B1020;
+  --brand-white: #FFFFFF;
+  --muted: #4A5268;
+  --outline: #D0D5DD;
+  --dark-surface: #F5F7F6;
+  --dark-card: var(--brand-white);
+  --dark-container: #EAECEF;
+  --ink: var(--brand-navy);
+  --accent-ink: var(--brand-navy);
+  --accent-tint: color-mix(in srgb, var(--brand-gold) 15%, var(--brand-white));
+  --control-outline: color-mix(in srgb, var(--muted) 76%, var(--dark-card));
+  --scrim: color-mix(in srgb, var(--brand-navy) 70%, transparent);
+  --floating-shadow: 0 16px 48px color-mix(in srgb, var(--brand-navy) 22%, transparent);
+  color-scheme: light;
+}
+
+:root.dark {
   --muted: #A6AEC4;
   --outline: #232A3E;
+  --dark-surface: var(--brand-navy);
+  --dark-card: #121A30;
+  --dark-container: #192442;
+  --ink: var(--brand-white);
+  --accent-ink: var(--brand-gold);
+  --accent-tint: #231D1A;
+  --floating-shadow: 0 16px 48px color-mix(in srgb, var(--brand-navy) 76%, transparent);
+  color-scheme: dark;
+}
+
+/* Legacy surface names resolve to the current theme. Keep the dashboard's
+   color-valued --primary local; Tailwind's root token is an HSL triplet. */
+.app-shell {
+  --primary: var(--brand-gold);
+  --on-primary: var(--brand-navy);
 }
 
 * { box-sizing: border-box; }
@@ -18,7 +44,7 @@ button { cursor: pointer; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
 .material-icon { display: inline-block; width: 1em; height: 1em; overflow: hidden; white-space: nowrap; font-family: 'Material Symbols Outlined'; font-style: normal; line-height: 1; vertical-align: middle; }
 
-.app-shell { min-height: 100dvh; background: var(--dark-surface); }
+.app-shell { min-height: 100dvh; background: var(--dark-surface); color: var(--ink); }
 .drawer-open { overflow: hidden; }
 .drawer-backdrop { position: fixed; inset: 0; z-index: 80; border: 0; background: rgba(0,0,0,.58); }
 .navigation-drawer { position: fixed; inset: 0 auto 0 0; z-index: 90; width: min(280px, calc(100vw - 48px)); height: 100dvh; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding: 16px; overflow-y: auto; background: var(--dark-card); border-right: 1px solid var(--outline); transform: translateX(-100%); transition: transform .28s ease; }
