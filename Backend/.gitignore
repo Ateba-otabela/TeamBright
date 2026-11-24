@@ -1,1 +1,4 @@
 /uploads/songs/
+__pycache__/
+*.py[cod]
+*.db
