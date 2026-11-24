@@ -1,0 +1,440 @@
+<!DOCTYPE html><html lang="en" class="dark"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Hit-Pattern Diagnostic &amp; Listening Advisor — CamerHits</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#1FB574',
+        'on-primary': '#0B1020',
+        'savanna-green': '#1FB574',
+        'deep-studio-navy': '#0B1020',
+        'accent-tint': '#132930',
+        'on-accent-tint': '#1FB574',
+        'light-surface': '#F5F7F6',
+        'light-on-surface': '#0B1020',
+        'light-surface-container-low': '#FFFFFF',
+        'light-on-surface-container-low': '#0B1020',
+        'light-surface-container': '#E6ECE9',
+        'light-on-surface-container': '#0B1020',
+        'light-on-surface-muted': '#4A5268',
+        'light-outline': '#D0D7D4',
+        'light-outline-strong': '#0B1020',
+        'dark-surface': '#0B1020',
+        'dark-on-surface': '#FFFFFF',
+        'dark-surface-container-low': '#121A30',
+        'dark-on-surface-container-low': '#FFFFFF',
+        'dark-surface-container': '#192442',
+        'dark-on-surface-container': '#FFFFFF',
+        'dark-on-surface-muted': '#A6AEC4',
+        'dark-outline': '#232A3E',
+        'dark-outline-strong': '#FFFFFF',
+      },
+      borderRadius: {
+        'sm': '4px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '16px',
+        'gutter-lg': '24px',
+        'gutter-xl': '32px',
+        'section': '32px',
+        'page-margin': '32px',
+      },
+      fontFamily: {
+        'display': ['"Sora"', 'sans-serif'],
+        'headline': ['"Sora"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"JetBrains Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['24px', { lineHeight: '32px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['18px', { lineHeight: '26px', letterSpacing: '0px', fontWeight: '700' }],
+        'title-md': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-md': ['14px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '500' }],
+        'label-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '500' }],
+        'mono-lg': ['28px', { lineHeight: '34px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'mono-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'mono-sm': ['12px', { lineHeight: '16px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '220ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;600;700&amp;family=Sora:wght@700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-surface dark:bg-dark-surface text-light-on-surface dark:text-dark-on-surface font-body antialiased">
+
+  <!-- Offline Sync Indicator Strip -->
+  <div class="w-full bg-light-surface-container dark:bg-dark-surface-container border-b border-light-outline dark:border-dark-outline px-gutter-lg py-1.5 flex items-center justify-between">
+    <div class="flex items-center gap-gutter-sm">
+      <span class="w-2 h-2 rounded-full bg-primary"></span>
+      <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted" data-design-text-token="mono-sm">Offline-ready sync active — changes will sync automatically</span>
+    </div>
+    <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted tabular-nums" data-design-text-token="mono-sm">AI Hit-Pattern Engine v2.4 • Cameroonian Benchmark</span>
+  </div>
+
+  <div class="min-h-[1024px] flex max-w-[1440px] mx-auto" data-stitch-vh="min-h-[1024px]===min-h-screen">
+    <!-- Fixed 240px Left Navigation Sidebar -->
+    <aside class="w-[240px] shrink-0 min-h-[1024px] border-r border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low flex flex-col justify-between p-gutter-md" data-stitch-vh="min-h-[1024px]===min-h-screen">
+      <div class="flex flex-col gap-gutter-lg">
+        <a href="../home-overview/HomeOverview.html" class="flex items-center gap-gutter-sm px-2 py-1">
+          <span class="w-8 h-8 rounded-md bg-primary text-on-primary flex items-center justify-center font-headline text-title-md font-bold">C</span>
+          <div>
+            <span class="font-headline text-headline-md tracking-tight block leading-none" data-design-text-token="headline-md">CamerHits</span>
+            <span class="font-mono text-mono-sm text-primary uppercase" data-design-text-token="mono-sm">Direct Studio</span>
+          </div>
+        </a>
+
+        <div class="rounded-lg bg-light-surface-container dark:bg-dark-surface-container border border-light-outline dark:border-dark-outline p-3 flex items-center gap-3">
+          <img src="https://lh3.googleusercontent.com/aida/ALJJyrAlLZnsWWDh2rucsubSEta2eLf5MSK_dMDASoE_df_XR3Tki6K4ofQ3QWo7Srh7-rGHIm25tHG-G8obSxc2iE3WY6G-mm-ATmp8lrlDD6wAb-hVOlD2_k7kkMhZ50ValLrNp_xsyB4uT1d5tSnYXFspeTlLtN_ii8AfignJ-H7PueJ23TRSSXDBVy1kxaNKSb0dAFqXboI9vlRCPxNg7G-4YFH32316bh21VwPeOyR51SrJteUY" alt="Kamga Beats" class="w-10 h-10 rounded-full object-cover border border-primary shrink-0">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1">
+              <span class="font-title text-label-lg font-semibold truncate" data-design-text-token="label-lg">Kamga Beats</span>
+              <span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: &#39;FILL&#39; 1;" aria-hidden="true">verified</span>
+            </div>
+            <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted block" data-design-text-token="mono-sm">Direct Artist</span>
+          </div>
+        </div>
+
+        <nav aria-label="Main navigation" class="flex flex-col gap-gutter-lg">
+          <div class="flex flex-col gap-1">
+            <a href="../home-overview/HomeOverview.html" class="flex items-center gap-3 px-3 py-2.5 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container hover:text-light-on-surface dark:hover:text-dark-on-surface font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">dashboard</span>
+              <span data-design-text-token="label-lg">Home Overview</span>
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <span class="px-3 font-mono text-mono-sm uppercase tracking-wider text-light-on-surface-muted dark:text-dark-on-surface-muted mb-1" data-design-text-token="mono-sm">B2C • Direct to Fans</span>
+            <a href="../catalog-vault/CatalogVault.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container hover:text-light-on-surface dark:hover:text-dark-on-surface font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">library_music</span>
+              <span data-design-text-token="label-lg">Catalog</span>
+            </a>
+            <a href="../revenue-bookings/RevenueBookings.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container hover:text-light-on-surface dark:hover:text-dark-on-surface font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">confirmation_number</span>
+              <span data-design-text-token="label-lg">Events &amp; Tickets</span>
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <span class="px-3 font-mono text-mono-sm uppercase tracking-wider text-light-on-surface-muted dark:text-dark-on-surface-muted mb-1" data-design-text-token="mono-sm">B2B • Direct Industry</span>
+            <a href="../ai-hit-diagnostic/AiHitDiagnostic.html" class="flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-accent-tint border border-primary text-primary font-label text-label-lg font-semibold">
+              <span class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">auto_awesome</span>
+                <span data-design-text-token="label-lg">AI Advisor</span>
+              </span>
+              <span class="px-1.5 py-0.5 rounded-full border border-primary font-mono text-mono-sm" data-design-text-token="mono-sm">1</span>
+            </a>
+            <a href="../split-contracts/SplitContracts.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container hover:text-light-on-surface dark:hover:text-dark-on-surface font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">handshake</span>
+              <span data-design-text-token="label-lg">Split Contracts</span>
+            </a>
+            <a href="../dj-promo-bounty/DjPromoBounty.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container hover:text-light-on-surface dark:hover:text-dark-on-surface font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">album</span>
+              <span data-design-text-token="label-lg">DJ Bounties</span>
+            </a>
+            <a href="../revenue-bookings/RevenueBookings.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container hover:text-light-on-surface dark:hover:text-dark-on-surface font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">event_available</span>
+              <span data-design-text-token="label-lg">Direct Bookings</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="rounded-lg border border-light-outline dark:border-dark-outline p-3 bg-light-surface dark:bg-dark-surface">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="material-symbols-outlined text-primary text-[16px]" aria-hidden="true">bolt</span>
+          <span class="font-mono text-mono-sm font-semibold" data-design-text-token="mono-sm">No Middlemen</span>
+        </div>
+        <p class="font-body text-body-sm text-light-on-surface-muted dark:text-dark-on-surface-muted" data-design-text-token="body-sm">Instant MTN MoMo payouts straight to your wallet.</p>
+      </div>
+    </aside>
+
+    <!-- 1200px Fluid Main Workspace -->
+    <div class="flex-1 min-w-0 flex flex-col">
+      <header class="sticky top-0 z-20 bg-light-surface dark:bg-dark-surface border-b border-light-outline dark:border-dark-outline px-gutter-xl py-3 flex items-center justify-between gap-gutter-md">
+        <div class="flex items-center gap-gutter-md">
+          <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted uppercase">Role:</span>
+          <div class="inline-flex items-center rounded-md border border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low p-0.5">
+            <button type="button" class="px-2.5 py-1 rounded-sm bg-primary text-on-primary font-label text-label-sm font-semibold">Artist</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">DJ</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">Collaborator</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">Promoter</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">Fan</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">Admin</button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-gutter-sm">
+          <button type="button" class="px-2.5 py-1.5 rounded-md border border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low font-mono text-mono-sm">EN / FR</button>
+          <button id="themeToggle" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low font-label text-label-sm">
+            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">contrast</span>
+            <span data-design-text-token="label-sm">Outdoor Light</span>
+          </button>
+          <button type="button" aria-label="Notifications" class="relative inline-flex items-center justify-center w-9 h-9 rounded-md border border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low">
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">notifications</span>
+            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-primary text-on-primary font-mono text-mono-sm font-bold">3</span>
+          </button>
+          <a href="../revenue-bookings/RevenueBookings.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-tint border border-primary text-primary font-mono text-mono-sm font-semibold tabular-nums">
+            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">account_balance_wallet</span>
+            <span data-design-text-token="mono-sm">284,650 XAF</span>
+          </a>
+        </div>
+      </header>
+
+      <main class="flex-1 p-gutter-xl flex flex-col gap-gutter-lg">
+        <!-- Side-by-Side Comparison Header -->
+        <section class="rounded-lg bg-light-surface-container-low dark:bg-dark-surface-container-low border border-light-outline dark:border-dark-outline p-gutter-lg flex flex-wrap items-center justify-between gap-gutter-md">
+          <div class="flex items-center gap-gutter-md">
+            <div>
+              <span class="font-mono text-mono-sm text-primary uppercase block mb-1" data-design-text-token="mono-sm">Benchmark Track (A)</span>
+              <select aria-label="Benchmark track" class="rounded-md bg-light-surface dark:bg-dark-surface border border-primary font-headline text-title-md px-3 py-2 pr-8">
+                <option selected>Buea Town Vibe (Hit Score 86.4)</option>
+                <option>Bamenda Sunrise (Draft)</option>
+              </select>
+            </div>
+            <span class="font-mono text-mono-md text-light-on-surface-muted dark:text-dark-on-surface-muted pt-5">VS</span>
+            <div>
+              <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted uppercase block mb-1" data-design-text-token="mono-sm">Diagnosed Track (B)</span>
+              <select aria-label="Diagnosed track" class="rounded-md bg-light-surface dark:bg-dark-surface border border-dashed border-light-outline-strong dark:border-dark-outline-strong font-headline text-title-md px-3 py-2 pr-8">
+                <option selected>Midnight Rain (Hit Score 41.2)</option>
+                <option>Douala Dusk (Archive)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-gutter-sm">
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-dashed border-light-outline-strong dark:border-dark-outline-strong font-mono text-mono-md font-bold tabular-nums" data-design-text-token="mono-md">
+              <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_downward</span>-45.2 Score Delta
+            </span>
+            <span data-component-id="badge-flag-warning" data-component-type="badge" data-component-variant="warning" class="px-2.5 py-1 rounded-full border border-light-outline-strong dark:border-dark-outline-strong font-mono text-mono-sm font-semibold">[SLOW_HOOK]</span>
+            <span data-component-id="badge-flag-warning" data-component-type="badge" data-component-variant="warning" class="px-2.5 py-1 rounded-full border border-light-outline-strong dark:border-dark-outline-strong font-mono text-mono-sm font-semibold">[DJ_FRICTION]</span>
+            <span data-component-id="badge-flag-warning" data-component-type="badge" data-component-variant="warning" class="px-2.5 py-1 rounded-full border border-light-outline-strong dark:border-dark-outline-strong font-mono text-mono-sm font-semibold">[PRICE_RESISTANCE]</span>
+          </div>
+        </section>
+
+        <!-- 2-Column Visual Audio & Radar Panel -->
+        <section class="grid grid-cols-12 gap-gutter-lg items-stretch">
+          <!-- Left 7 Cols: Stacked Waveforms with Aligned Chorus Markers -->
+          <div class="col-span-7 rounded-lg bg-light-surface-container-low dark:bg-dark-surface-container-low border border-light-outline dark:border-dark-outline p-gutter-lg flex flex-col justify-between gap-gutter-md">
+            <div class="flex items-center justify-between">
+              <h2 class="font-headline text-headline-md" data-design-text-token="headline-md">Chorus Entry &amp; Waveform Alignment</h2>
+              <span class="px-2.5 py-0.5 rounded-full border border-dashed border-light-outline-strong dark:border-dark-outline-strong font-mono text-mono-sm font-bold" data-design-text-token="mono-sm">+26s Hook Delay</span>
+            </div>
+
+            <!-- Track A Waveform -->
+            <div class="flex flex-col gap-1.5">
+              <div class="flex items-center justify-between font-mono text-mono-sm">
+                <span class="text-primary font-semibold">Buea Town Vibe (86.4)</span>
+                <span class="text-primary">Chorus at 18s</span>
+              </div>
+              <div class="rounded-md bg-light-surface dark:bg-dark-surface border border-light-outline dark:border-dark-outline p-3 relative">
+                <svg viewBox="0 0 600 56" class="w-full h-14">
+                  <g fill="#1FB574">
+                    <rect x="8" y="22" width="4" height="12" rx="2"></rect><rect x="18" y="18" width="4" height="20" rx="2"></rect><rect x="28" y="20" width="4" height="16" rx="2"></rect><rect x="38" y="16" width="4" height="24" rx="2"></rect><rect x="48" y="14" width="4" height="28" rx="2"></rect><rect x="58" y="12" width="4" height="32" rx="2"></rect>
+                    <rect x="78" y="6" width="4" height="44" rx="2"></rect><rect x="88" y="4" width="4" height="48" rx="2"></rect><rect x="98" y="8" width="4" height="40" rx="2"></rect><rect x="108" y="4" width="4" height="48" rx="2"></rect><rect x="118" y="10" width="4" height="36" rx="2"></rect><rect x="128" y="6" width="4" height="44" rx="2"></rect><rect x="138" y="4" width="4" height="48" rx="2"></rect><rect x="148" y="10" width="4" height="36" rx="2"></rect><rect x="158" y="6" width="4" height="44" rx="2"></rect><rect x="168" y="8" width="4" height="40" rx="2"></rect><rect x="178" y="4" width="4" height="48" rx="2"></rect><rect x="188" y="12" width="4" height="32" rx="2"></rect><rect x="198" y="6" width="4" height="44" rx="2"></rect><rect x="208" y="8" width="4" height="40" rx="2"></rect><rect x="218" y="4" width="4" height="48" rx="2"></rect><rect x="228" y="10" width="4" height="36" rx="2"></rect><rect x="238" y="8" width="4" height="40" rx="2"></rect><rect x="248" y="12" width="4" height="32" rx="2"></rect>
+                  </g>
+                  <line x1="74" y1="0" x2="74" y2="56" stroke="#1FB574" stroke-width="2"></line>
+                  <text x="78" y="12" fill="#1FB574" font-family="JetBrains Mono" font-size="10" font-weight="700">18s CHORUS</text>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Track B Waveform -->
+            <div class="flex flex-col gap-1.5">
+              <div class="flex items-center justify-between font-mono text-mono-sm">
+                <span class="font-semibold">Midnight Rain (41.2)</span>
+                <span>Chorus at 44s (+26s delay)</span>
+              </div>
+              <div class="rounded-md bg-light-surface dark:bg-dark-surface border border-dashed border-light-outline-strong dark:border-dark-outline-strong p-3 relative">
+                <svg viewBox="0 0 600 56" class="w-full h-14">
+                  <g fill="currentColor" fill-opacity="0.45">
+                    <rect x="8" y="24" width="4" height="8" rx="2"></rect><rect x="18" y="22" width="4" height="12" rx="2"></rect><rect x="28" y="24" width="4" height="8" rx="2"></rect><rect x="38" y="20" width="4" height="16" rx="2"></rect><rect x="48" y="22" width="4" height="12" rx="2"></rect><rect x="58" y="20" width="4" height="16" rx="2"></rect><rect x="68" y="22" width="4" height="12" rx="2"></rect><rect x="78" y="20" width="4" height="16" rx="2"></rect><rect x="88" y="18" width="4" height="20" rx="2"></rect><rect x="98" y="20" width="4" height="16" rx="2"></rect><rect x="108" y="22" width="4" height="12" rx="2"></rect><rect x="118" y="18" width="4" height="20" rx="2"></rect><rect x="128" y="20" width="4" height="16" rx="2"></rect><rect x="138" y="16" width="4" height="24" rx="2"></rect><rect x="148" y="18" width="4" height="20" rx="2"></rect><rect x="158" y="14" width="4" height="28" rx="2"></rect>
+                  </g>
+                  <g fill="currentColor" fill-opacity="0.9">
+                    <rect x="178" y="6" width="4" height="44" rx="2"></rect><rect x="188" y="8" width="4" height="40" rx="2"></rect><rect x="198" y="4" width="4" height="48" rx="2"></rect><rect x="208" y="10" width="4" height="36" rx="2"></rect><rect x="218" y="6" width="4" height="44" rx="2"></rect><rect x="228" y="8" width="4" height="40" rx="2"></rect><rect x="238" y="12" width="4" height="32" rx="2"></rect><rect x="248" y="6" width="4" height="44" rx="2"></rect>
+                  </g>
+                  <line x1="174" y1="0" x2="174" y2="56" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3"></line>
+                  <text x="178" y="12" fill="currentColor" font-family="JetBrains Mono" font-size="10" font-weight="700">44s CHORUS</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 5 Cols: Radar Chart vs Cameroonian Hit Benchmark -->
+          <div class="col-span-5 rounded-lg bg-light-surface-container-low dark:bg-dark-surface-container-low border border-light-outline dark:border-dark-outline p-gutter-lg flex flex-col justify-between gap-2">
+            <div class="flex items-center justify-between">
+              <h2 class="font-headline text-headline-md" data-design-text-token="headline-md">Sonic Benchmark</h2>
+              <span class="font-mono text-mono-sm text-primary" data-design-text-token="mono-sm">6-Axis Radar</span>
+            </div>
+            <div class="flex items-center justify-center">
+              <svg viewBox="0 0 280 220" class="w-full max-w-[280px] h-[200px]">
+                <!-- Hexagon Rings -->
+                <polygon points="140,24 218,69 218,159 140,204 62,159 62,69" fill="none" stroke="currentColor" stroke-opacity="0.15"></polygon>
+                <polygon points="140,54 192,84 192,144 140,174 88,144 88,84" fill="none" stroke="currentColor" stroke-opacity="0.15"></polygon>
+                <polygon points="140,84 166,99 166,129 140,144 114,129 114,99" fill="none" stroke="currentColor" stroke-opacity="0.15"></polygon>
+                <!-- Benchmark (Green) -->
+                <polygon points="140,34 206,75 210,154 140,190 74,150 78,76" fill="#1FB574" fill-opacity="0.22" stroke="#1FB574" stroke-width="2"></polygon>
+                <!-- Midnight Rain (White Dashed) -->
+                <polygon points="140,68 178,94 168,136 140,162 96,138 102,92" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3"></polygon>
+                <!-- Axis Labels -->
+                <g fill="currentColor" font-family="JetBrains Mono" font-size="10">
+                  <text x="122" y="16">Tempo</text>
+                  <text x="224" y="72">Energy</text>
+                  <text x="224" y="164">Hook Speed</text>
+                  <text x="104" y="216">Vocal Presence</text>
+                  <text x="4" y="164">Repetition</text>
+                  <text x="8" y="72">Loudness</text>
+                </g>
+              </svg>
+            </div>
+            <div class="flex items-center justify-center gap-6 font-mono text-mono-sm">
+              <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm bg-primary inline-block"></span>Buea Town Vibe</span>
+              <span class="flex items-center gap-2"><span class="w-3 h-0.5 border-t-2 border-dashed border-light-on-surface dark:border-dark-on-surface inline-block"></span>Midnight Rain</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Full-Width Seed Metric Comparison Table & Weighted Score Breakdown -->
+        <section class="rounded-lg bg-light-surface-container-low dark:bg-dark-surface-container-low border border-light-outline dark:border-dark-outline overflow-hidden">
+          <div class="px-gutter-lg py-3 border-b border-light-outline dark:border-dark-outline flex items-center justify-between">
+            <h2 class="font-headline text-headline-md" data-design-text-token="headline-md">Diagnostic Metric Breakdown &amp; Conversion Funnel</h2>
+            <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted" data-design-text-token="mono-sm">Weights: Hook 25% • DJ Traction 30% • Retention 25% • Monetization 20%</span>
+          </div>
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-light-outline dark:border-dark-outline bg-light-surface-container dark:bg-dark-surface-container font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted uppercase">
+                <th class="px-4 py-2.5">Metric</th>
+                <th class="px-4 py-2.5 text-primary">Buea Town Vibe (86.4)</th>
+                <th class="px-4 py-2.5">Midnight Rain (41.2)</th>
+                <th class="px-4 py-2.5">Diagnostic Impact</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-light-outline dark:divide-dark-outline font-mono text-mono-sm tabular-nums">
+              <tr><td class="px-4 py-2.5 font-body font-medium">Time to chorus</td><td class="px-4 py-2.5 text-primary font-bold">18s</td><td class="px-4 py-2.5 font-bold">44s</td><td class="px-4 py-2.5">+26s intro delay</td></tr>
+              <tr><td class="px-4 py-2.5 font-body font-medium">DJ downloads</td><td class="px-4 py-2.5">500</td><td class="px-4 py-2.5">500</td><td class="px-4 py-2.5">Equal top-of-funnel reach</td></tr>
+              <tr><td class="px-4 py-2.5 font-body font-medium">DJ spins</td><td class="px-4 py-2.5 text-primary font-bold">450 (90.0%)</td><td class="px-4 py-2.5 font-bold">171 (34.2%)</td><td class="px-4 py-2.5 font-bold">-55.8pt drop in Douala</td></tr>
+              <tr><td class="px-4 py-2.5 font-body font-medium">Avg listen completion</td><td class="px-4 py-2.5 text-primary font-bold">82%</td><td class="px-4 py-2.5 font-bold">48%</td><td class="px-4 py-2.5">-34% drop-off before chorus</td></tr>
+              <tr><td class="px-4 py-2.5 font-body font-medium">Preview plays</td><td class="px-4 py-2.5">4,000</td><td class="px-4 py-2.5">3,000</td><td class="px-4 py-2.5">-1,000 organic previews</td></tr>
+              <tr><td class="px-4 py-2.5 font-body font-medium">Sales &amp; conversion</td><td class="px-4 py-2.5 text-primary font-bold">218 (5.45%)</td><td class="px-4 py-2.5 font-bold">122 (4.07%)</td><td class="px-4 py-2.5">-1.38% conversion drag</td></tr>
+              <tr><td class="px-4 py-2.5 font-body font-medium">Direct B2C Price</td><td class="px-4 py-2.5 text-primary font-bold">500 XAF</td><td class="px-4 py-2.5 font-bold">1,000 XAF</td><td class="px-4 py-2.5">2x price friction</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Bottom 2-Column AI Advisor Action Deck -->
+        <section class="grid grid-cols-12 gap-gutter-lg items-stretch">
+          <!-- Left 7 Cols: Savanna Green Advisor Card with 4 One-Tap Tools -->
+          <article data-component-id="card-ai-advisor" data-component-type="card" data-component-variant="action" class="col-span-7 rounded-lg bg-accent-tint border-2 border-primary p-gutter-lg flex flex-col justify-between gap-gutter-md">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">auto_awesome</span>
+                  <span class="font-mono text-mono-sm text-primary uppercase font-bold">AI ADVISOR • ROOT CAUSE PRESCRIPTION</span>
+                </div>
+              </div>
+              <p class="font-body text-body-md text-dark-on-surface mb-2" data-design-text-token="body-md">
+                &#34;Midnight Rain&#34; loses 55.8% of Douala DJs because the 44s intro stalls club energy, while the 1,000 XAF price slows fan impulse buys.
+              </p>
+              <p class="font-mono text-mono-sm text-dark-on-surface-muted" data-design-text-token="mono-sm">
+                Pattern match based on Cameroonian hit benchmarks — likely drivers, not guarantees.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-gutter-sm">
+              <button type="button" class="rounded-md bg-primary text-on-primary p-3 text-left flex flex-col gap-0.5 hover:opacity-90 transition-opacity duration-state-change">
+                <span class="font-mono text-mono-sm font-bold">[RADIO_EDIT]</span>
+                <span class="font-body text-body-sm font-semibold">Trim 20s intro to hit chorus by 24s</span>
+              </button>
+              <a href="../dj-promo-bounty/DjPromoBounty.html" class="rounded-md bg-primary text-on-primary p-3 text-left flex flex-col gap-0.5 hover:opacity-90 transition-opacity duration-state-change">
+                <span class="font-mono text-mono-sm font-bold">[DJ_BOUNTY]</span>
+                <span class="font-body text-body-sm font-semibold">Pre-fill 15,000 XAF Douala DJ campaign</span>
+              </a>
+              <button type="button" class="rounded-md bg-dark-surface-container-low border border-primary text-dark-on-surface p-3 text-left flex flex-col gap-0.5 hover:bg-dark-surface-container transition-colors duration-state-change">
+                <span class="font-mono text-mono-sm font-bold text-primary">[PRICE_DROP]</span>
+                <span class="font-body text-body-sm">Test 500 XAF direct fan price (Confirm)</span>
+              </button>
+              <button type="button" class="rounded-md bg-dark-surface-container-low border border-primary text-dark-on-surface p-3 text-left flex flex-col gap-0.5 hover:bg-dark-surface-container transition-colors duration-state-change">
+                <span class="font-mono text-mono-sm font-bold text-primary">[CITY_TARGETING]</span>
+                <span class="font-body text-body-sm">Open Buea / Douala listener heatmap</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Right 5 Cols: Smart-Contract Check + AI Follow-Up Chat -->
+          <div class="col-span-5 rounded-lg bg-light-surface-container-low dark:bg-dark-surface-container-low border border-light-outline dark:border-dark-outline p-gutter-lg flex flex-col justify-between gap-gutter-md">
+            <div class="rounded-md border border-dashed border-light-outline-strong dark:border-dark-outline-strong p-3 flex items-center justify-between gap-3">
+              <div>
+                <span class="font-mono text-mono-sm font-bold block">Smart-Contract Check</span>
+                <span class="font-body text-body-sm text-light-on-surface-muted dark:text-dark-on-surface-muted">Confirm Producer Njoh 30% split before boosting</span>
+              </div>
+              <a href="../split-contracts/SplitContracts.html" class="px-3 py-1.5 rounded-md bg-primary text-on-primary font-label text-label-sm font-semibold shrink-0">Verify Split</a>
+            </div>
+
+            <div class="flex flex-col gap-2 flex-1 justify-end">
+              <div class="rounded-md bg-light-surface dark:bg-dark-surface border border-light-outline dark:border-dark-outline p-3 font-body text-body-sm">
+                <span class="font-mono text-mono-sm text-primary block mb-1">AI Advisor:</span>
+                Ready to trim 0:00–0:20 on &#34;Midnight Rain&#34; and re-export the &lt;500 KB preview?
+              </div>
+              <div class="flex items-center gap-2">
+                <input type="text" placeholder="Ask AI Advisor about Douala DJs..." class="flex-1 rounded-md bg-light-surface dark:bg-dark-surface border border-light-outline dark:border-dark-outline font-body text-body-sm px-3 py-2">
+                <button type="button" class="px-3 py-2 rounded-md border border-primary text-primary font-label text-label-sm font-semibold shrink-0">Save to Next Track Brief</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const themeBtn = document.getElementById('themeToggle');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          root.classList.toggle('dark');
+          themeBtn.querySelector('span:last-child').textContent = root.classList.contains('dark') ? 'Outdoor Light' : 'Studio Dark';
+        });
+      }
+    })();
+  </script>
+
+
+</body></html>

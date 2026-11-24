@@ -1,16 +1,20 @@
-# React + Vite
+# Bantu Music 2.0 frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend is a React + TypeScript + Vite application organized by application concerns and product features.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+copy .env.example .env.local
+npm run dev
+```
 
-## React Compiler
+The API client reads `VITE_API_BASE_URL` and is ready to connect to the separate FastAPI service. Feature modules are intentionally structural only until their product requirements are defined.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Scripts
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `npm run dev` starts the Vite development server.
+- `npm run lint` checks TypeScript and React source files.
+- `npm run build` type-checks and creates a production build.
+- `npm run check` runs linting and the production build together.

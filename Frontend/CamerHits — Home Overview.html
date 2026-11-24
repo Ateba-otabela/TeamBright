@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Home Overview — CamerHits</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: {
+    colors: {
+      primary:'#F4C430','on-primary':'#1A1607','accent-tint':'#382D12',
+      ls:'#F5F7F6', lc1:'#FFFFFF', lc2:'#E6ECE9', lmuted:'#4A5268', lo:'#D0D7D4',
+      ds:'#0B1020', dc1:'#121A30', dc2:'#192442', dmuted:'#A6AEC4', do:'#232A3E'
+    },
+    fontFamily: {
+      headline:['Sora','sans-serif'], body:['Inter','sans-serif'], mono:['JetBrains Mono','monospace']
+    }
+  }}
+};
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&family=Sora:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet">
+<style type="text/tailwindcss">
+@layer components {
+  .ms { @apply inline-block overflow-hidden whitespace-nowrap align-middle; font-family:'Material Symbols Outlined'; width:1em; height:1em; line-height:1; }
+  .muted { @apply text-lmuted dark:text-dmuted; }
+  .card { @apply rounded-lg bg-lc1 dark:bg-dc1 border border-lo dark:border-do; }
+  .hov { @apply hover:bg-lc2 dark:hover:bg-dc2 transition-colors duration-150; }
+  .nav { @apply flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium muted hov hover:text-ds dark:hover:text-white; }
+  .grp { @apply px-3 mb-1 font-mono text-xs uppercase tracking-wider muted; }
+  .pill { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-xs font-bold; }
+  .ctl { @apply rounded-md border border-lo dark:border-do bg-lc1 dark:bg-dc1 text-xs hov; }
+}
+:root { box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+html { scroll-padding-top:env(safe-area-inset-top,0px); }
+</style>
+</head>
+<body class="bg-ls dark:bg-ds text-ds dark:text-white font-body antialiased">
+
+<div class="flex max-w-[1440px] mx-auto min-h-[1024px]">
+  <!-- Navigation drawer -->
+  <div id="sidebarBackdrop" class="fixed inset-0 z-40 hidden bg-black/50 lg:hidden"></div>
+  <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-[280px] -translate-x-full flex-col justify-between overflow-y-auto border-r border-lo bg-lc1 p-4 transition-transform duration-300 lg:z-30 lg:w-[240px] lg:translate-x-0 dark:border-do dark:bg-dc1">
+    <div class="flex w-full flex-col justify-between gap-6">
+      <div class="flex items-center gap-2 px-2 py-1">
+        <a href="#" class="flex items-center gap-2">
+          <span class="w-8 h-8 rounded-md bg-primary text-on-primary flex items-center justify-center font-headline font-bold">C</span>
+          <span><span class="font-headline text-lg block leading-none">CamerHits</span><span class="font-mono text-xs text-primary uppercase">Direct Studio</span></span>
+        </a>
+        <button id="sidebarClose" type="button" class="ml-auto ctl h-9 w-9 items-center justify-center lg:hidden" aria-label="Close navigation"><span class="ms text-xl">close</span></button>
+      </div>
+      <div class="rounded-lg bg-lc2 dark:bg-dc2 border border-lo dark:border-do p-3 flex items-center gap-3">
+        <svg class="w-10 h-10 shrink-0" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="#382D12" stroke="#F4C430" stroke-width="1.5"/><text x="20" y="25" text-anchor="middle" font-family="Sora,sans-serif" font-weight="700" font-size="14" fill="#F4C430">KB</text></svg>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1"><span class="text-sm font-semibold truncate">Kamga Beats</span><span class="ms text-primary text-base" style="font-variation-settings:'FILL' 1">verified</span></div>
+          <span class="font-mono text-xs muted">Direct Artist</span>
+        </div>
+      </div>
+      <nav class="flex flex-col gap-6">
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-md bg-accent-tint border border-primary text-primary text-sm font-semibold"><span class="ms text-xl">dashboard</span>Home Overview</a>
+        <div class="flex flex-col gap-1">
+          <span class="grp">B2C • Direct to Fans</span>
+          <a href="#" class="nav"><span class="ms text-xl">library_music</span>Catalog</a>
+          <a href="#" class="nav"><span class="ms text-xl">confirmation_number</span>Events &amp; Tickets</a>
+        </div>
+        <div class="flex flex-col gap-1">
+          <span class="grp">B2B • Direct Industry</span>
+          <a href="#" class="nav justify-between"><span class="flex items-center gap-3"><span class="ms text-xl">auto_awesome</span>AI Advisor</span><span class="px-1.5 rounded-full border border-dashed border-ds dark:border-white font-mono text-xs">1</span></a>
+          <a href="#" class="nav"><span class="ms text-xl">handshake</span>Split Contracts</a>
+          <a href="#" class="nav"><span class="ms text-xl">album</span>DJ Bounties</a>
+          <a href="#" class="nav"><span class="ms text-xl">event_available</span>Direct Bookings</a>
+        </div>
+      </nav>
+    </div>
+    <div class="rounded-lg border border-lo dark:border-do p-3 bg-ls dark:bg-ds">
+      <div class="flex items-center gap-2 mb-1 font-mono text-xs font-semibold"><span class="ms text-primary text-base">bolt</span>No Middlemen</div>
+      <p class="text-xs muted">Instant MTN MoMo payouts straight to your wallet.</p>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="flex-1 min-w-0 flex flex-col lg:ml-[240px]">
+    <header class="sticky top-0 z-20 bg-ls dark:bg-ds border-b border-lo dark:border-do px-4 md:px-8 py-3 flex flex-wrap items-center justify-between gap-3" style="top:env(safe-area-inset-top,0px)">
+      <div class="flex items-center gap-3 min-w-0">
+        <button id="sidebarOpen" type="button" class="ctl inline-flex h-9 w-9 shrink-0 items-center justify-center lg:hidden" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><span class="ms text-xl">menu</span></button>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="langToggle" class="ctl px-2.5 py-1.5 font-mono">EN / FR</button>
+        <button id="themeToggle" class="ctl inline-flex items-center gap-1.5 px-2.5 py-1.5"><span class="ms text-base">contrast</span><span id="themeLabel">Outdoor Light</span></button>
+        <button class="ctl relative w-9 h-9 inline-flex items-center justify-center" aria-label="Notifications (3 unread)"><span class="ms text-lg">notifications</span><span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-primary text-on-primary font-mono text-xs font-bold inline-flex items-center justify-center">3</span></button>
+        <a href="#" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-tint border border-primary text-primary font-mono text-xs font-semibold"><span class="ms text-base">account_balance_wallet</span>284,650 XAF</a>
+      </div>
+    </header>
+
+    <main class="p-4 md:p-8 flex flex-col gap-6">
+      <section class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-1">
+            <h1 class="font-headline text-3xl lg:text-4xl font-bold tracking-tight">Welcome back, Kamga Beats</h1>
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary text-on-primary text-xs font-semibold"><span class="ms text-sm" style="font-variation-settings:'FILL' 1">verified</span>Verified Artist</span>
+          </div>
+          <p class="text-sm muted">Direct B2C fan sales and B2B bookings active across Buea, Douala, and Yaoundé.</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="card px-4 py-2 flex flex-col"><span class="text-xs muted">Direct MoMo Wallet</span><span class="font-mono font-bold">284,650 XAF</span></div>
+          <button class="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-on-primary text-sm font-semibold hover:opacity-90"><span class="ms text-xl">account_balance_wallet</span>Withdraw to MoMo</button>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <a href="#" class="card hov p-4 flex items-center gap-3"><span class="w-10 h-10 rounded-md bg-accent-tint border border-primary flex items-center justify-center text-primary shrink-0"><span class="ms text-xl">upload_file</span></span><div><span class="font-semibold block">Upload Song</span><span class="text-xs muted">Direct B2C &amp; EPK</span></div></a>
+        <a href="#" class="card hov p-4 flex items-center gap-3"><span class="w-10 h-10 rounded-md bg-accent-tint border border-primary flex items-center justify-center text-primary shrink-0"><span class="ms text-xl">auto_awesome</span></span><div><span class="font-semibold block">AI Diagnosis</span><span class="text-xs muted">Compare Hit Scores</span></div></a>
+        <a href="#" class="card hov p-4 flex items-center gap-3"><span class="w-10 h-10 rounded-md bg-accent-tint border border-primary flex items-center justify-center text-primary shrink-0"><span class="ms text-xl">handshake</span></span><div><span class="font-semibold block">Split Contract</span><span class="text-xs muted">PIN-signed MoMo splits</span></div></a>
+        <a href="#" class="card hov p-4 flex items-center gap-3"><span class="w-10 h-10 rounded-md bg-accent-tint border border-primary flex items-center justify-center text-primary shrink-0"><span class="ms text-xl">campaign</span></span><div><span class="font-semibold block">Fund DJ Bounty</span><span class="text-xs muted">Douala &amp; Buea clubs</span></div></a>
+      </section>
+
+      <section class="grid grid-cols-2 xl:grid-cols-4 gap-4 items-stretch">
+        <article class="card p-6 flex flex-col justify-between gap-3">
+          <div class="flex flex-col gap-1.5"><span class="text-xs muted">Total Direct Earnings (Mo)</span><div><span class="pill bg-primary text-on-primary">+18.4%</span></div></div>
+          <p class="font-mono text-2xl font-bold">482,500 XAF</p><span class="text-xs muted">312,000 B2C • 170,500 B2B</span>
+        </article>
+        <article class="card p-6 flex flex-col justify-between gap-3">
+          <div class="flex flex-col gap-1.5"><span class="text-xs muted">Direct B2C Plays &amp; Sales</span><div><span class="pill bg-primary text-on-primary">4.86% conv</span></div></div>
+          <p class="font-mono text-2xl font-bold">340 Sales</p><span class="text-xs muted">7,000 previews across 2 tracks</span>
+        </article>
+        <article class="card p-6 flex flex-col justify-between gap-3">
+          <div class="flex flex-col gap-1.5"><span class="text-xs muted">Verified DJ Spins</span><div><span class="pill border border-dashed border-ds dark:border-white"><span class="ms text-sm">arrow_downward</span>55.8pt</span></div></div>
+          <p class="font-mono text-2xl font-bold">621 Spins</p><span class="text-xs muted">450 Buea Town • 171 Midnight Rain</span>
+        </article>
+        <article class="card p-6 flex flex-col justify-between gap-3">
+          <div class="flex flex-col gap-1.5"><span class="text-xs muted">B2B Bounties &amp; Bookings</span><div><span class="pill bg-accent-tint border border-primary text-primary font-semibold">Escrowed</span></div></div>
+          <p class="font-mono text-2xl font-bold">15,000 XAF</p><span class="text-xs muted">Douala DJ Bounty + 1 Live Request</span>
+        </article>
+      </section>
+
+      <section class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+        <div class="card xl:col-span-8 p-6 flex flex-col gap-4">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="font-headline text-lg font-bold">Direct Revenue Over Time (XAF)</h2>
+              <p class="text-xs muted">Comparing B2C fan sales &amp; tickets vs. B2B bounties &amp; direct bookings (Last 30 Days)</p>
+            </div>
+            <div class="flex items-center gap-4 font-mono text-xs">
+              <span class="flex items-center gap-2"><span class="w-3 h-0.5 bg-primary inline-block"></span>B2C Fan Sales</span>
+              <span class="flex items-center gap-2 muted"><span class="w-3 border-t-2 border-dashed border-ds dark:border-white inline-block"></span>B2B Bookings</span>
+            </div>
+          </div>
+          <div class="w-full h-[270px]">
+            <svg viewBox="0 0 760 250" class="w-full h-full overflow-visible" aria-label="Direct revenue line chart">
+              <defs><linearGradient id="gf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F4C430" stop-opacity="0.28"/><stop offset="100%" stop-color="#F4C430" stop-opacity="0"/></linearGradient></defs>
+              <g stroke="currentColor" stroke-opacity="0.10"><line x1="48" y1="20" x2="740" y2="20"/><line x1="48" y1="75" x2="740" y2="75"/><line x1="48" y1="130" x2="740" y2="130"/><line x1="48" y1="185" x2="740" y2="185"/><line x1="48" y1="220" x2="740" y2="220"/></g>
+              <g fill="currentColor" fill-opacity="0.6" font-family="JetBrains Mono,monospace" font-size="11"><text x="0" y="24">120k</text><text x="0" y="79">90k</text><text x="0" y="134">60k</text><text x="0" y="189">30k</text><text x="0" y="224">0</text></g>
+              <path d="M55,190 C120,175 180,145 245,120 C310,95 370,110 435,72 C500,35 570,58 635,40 C680,28 715,24 740,22 L740,220 L55,220 Z" fill="url(#gf)"/>
+              <path d="M55,190 C120,175 180,145 245,120 C310,95 370,110 435,72 C500,35 570,58 635,40 C680,28 715,24 740,22" fill="none" stroke="#F4C430" stroke-width="3" stroke-linecap="round"/>
+              <path d="M55,205 C120,198 180,190 245,172 C310,160 370,168 435,142 C500,126 570,132 635,112 C680,104 715,98 740,94" fill="none" stroke="currentColor" stroke-opacity="0.75" stroke-width="2" stroke-dasharray="6 5" stroke-linecap="round"/>
+              <circle cx="435" cy="72" r="5" fill="#F4C430" stroke="#1A1607" stroke-width="2"/><circle cx="740" cy="22" r="5" fill="#F4C430" stroke="#1A1607" stroke-width="2"/>
+              <g fill="currentColor" fill-opacity="0.6" font-family="JetBrains Mono,monospace" font-size="11"><text x="50" y="242">Oct 24</text><text x="235" y="242">Nov 01</text><text x="420" y="242">Nov 10</text><text x="615" y="242">Nov 18</text><text x="700" y="242">Nov 23</text></g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="xl:col-span-4 flex flex-col gap-4">
+          <article class="rounded-lg bg-accent-tint border-2 border-primary p-6 flex flex-col gap-4 text-white">
+            <div class="flex items-center justify-between gap-2">
+              <span class="flex items-center gap-2 font-mono text-xs text-primary uppercase font-bold tracking-wider"><span class="ms text-xl">auto_awesome</span>AI Advisor</span>
+              <span class="pill border border-dashed border-white"><span class="ms text-sm">arrow_downward</span>-45.2 Hit Score</span>
+            </div>
+            <div>
+              <h2 class="font-headline text-lg font-bold mb-1.5">Midnight Rain Alert</h2>
+              <p class="text-sm text-dmuted">Score dropped to <strong class="font-mono text-white">41.2</strong> vs. <strong class="font-mono text-white">86.4</strong> on “Buea Town Vibe”. 44s intro delay and 1,000 XAF pricing are slowing Douala DJ spins.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="px-2 py-0.5 rounded-full border border-white font-mono text-xs">SLOW_HOOK</span>
+              <span class="px-2 py-0.5 rounded-full border border-white font-mono text-xs">DJ_FRICTION</span>
+              <span class="px-2 py-0.5 rounded-full border border-white font-mono text-xs">PRICE_RESISTANCE</span>
+            </div>
+            <a href="#" class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-md bg-primary text-on-primary text-sm font-semibold hover:opacity-90">Inspect Diagnosis<span class="ms text-lg">arrow_forward</span></a>
+          </article>
+
+          <article class="card p-6 flex flex-col gap-3 flex-1">
+            <div class="flex items-center justify-between"><h3 class="font-headline text-lg font-bold">Next Track Brief</h3><span id="briefCount" class="font-mono text-xs text-primary">2/4 Done</span></div>
+            <ul id="brief" class="flex flex-col gap-2.5 text-xs">
+              <li data-done="1" class="flex items-center gap-2.5 cursor-pointer"><span class="ms text-primary text-lg" style="font-variation-settings:'FILL' 1">check_circle</span><span class="line-through muted">Hit chorus before 20s (Radio Edit)</span></li>
+              <li data-done="1" class="flex items-center gap-2.5 cursor-pointer"><span class="ms text-primary text-lg" style="font-variation-settings:'FILL' 1">check_circle</span><span class="line-through muted">Lock Producer Njoh 30% MoMo split</span></li>
+              <li data-done="0" class="flex items-center gap-2.5 cursor-pointer"><span class="ms muted text-lg">radio_button_unchecked</span><span>Test 500 XAF direct fan price</span></li>
+              <li data-done="0" class="flex items-center gap-2.5 cursor-pointer"><span class="ms muted text-lg">radio_button_unchecked</span><span>Launch 15,000 XAF Douala DJ bounty</span></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  document.getElementById('themeToggle').addEventListener('click', function () {
+    root.classList.toggle('dark');
+    document.getElementById('themeLabel').textContent = root.classList.contains('dark') ? 'Outdoor Light' : 'Studio Dark';
+  });
+  var en = true, lang = document.getElementById('langToggle');
+  lang.addEventListener('click', function () { en = !en; lang.textContent = en ? 'EN / FR' : 'FR / EN'; });
+
+  var sidebar = document.getElementById('sidebar');
+  var sidebarBackdrop = document.getElementById('sidebarBackdrop');
+  var sidebarOpen = document.getElementById('sidebarOpen');
+  var sidebarClose = document.getElementById('sidebarClose');
+
+  function openSidebar() {
+    sidebar.classList.remove('-translate-x-full');
+    sidebarBackdrop.classList.remove('hidden');
+    sidebarOpen.setAttribute('aria-expanded', 'true');
+    sidebar.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.add('-translate-x-full');
+    sidebarBackdrop.classList.add('hidden');
+    sidebarOpen.setAttribute('aria-expanded', 'false');
+    sidebar.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('overflow-hidden');
+  }
+
+  closeSidebar();
+
+  sidebarOpen.addEventListener('click', openSidebar);
+  sidebarClose.addEventListener('click', closeSidebar);
+  sidebarBackdrop.addEventListener('click', closeSidebar);
+  sidebar.querySelectorAll('nav a').forEach(function (link) {
+    link.addEventListener('click', closeSidebar);
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') closeSidebar();
+  });
+
+  var items = document.querySelectorAll('#brief li');
+  function render() {
+    var n = 0;
+    items.forEach(function (li) {
+      var done = li.dataset.done === '1'; if (done) n++;
+      var ic = li.children[0], tx = li.children[1];
+      ic.textContent = done ? 'check_circle' : 'radio_button_unchecked';
+      ic.className = 'ms text-lg ' + (done ? 'text-primary' : 'muted');
+      ic.style.fontVariationSettings = done ? "'FILL' 1" : '';
+      tx.className = done ? 'line-through muted' : '';
+    });
+    document.getElementById('briefCount').textContent = n + '/4 Done';
+  }
+  items.forEach(function (li) {
+    li.addEventListener('click', function () { li.dataset.done = li.dataset.done === '1' ? '0' : '1'; render(); });
+  });
+})();
+</script>
+</body>
+</html>

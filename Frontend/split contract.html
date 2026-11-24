@@ -1,0 +1,418 @@
+<!DOCTYPE html><html lang="en" class="dark"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct One-Click Split Contract Builder — CamerHits</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#1FB574',
+        'on-primary': '#0B1020',
+        'savanna-green': '#1FB574',
+        'deep-studio-navy': '#0B1020',
+        'accent-tint': '#132930',
+        'on-accent-tint': '#1FB574',
+        'light-surface': '#F5F7F6',
+        'light-on-surface': '#0B1020',
+        'light-surface-container-low': '#FFFFFF',
+        'light-on-surface-container-low': '#0B1020',
+        'light-surface-container': '#E6ECE9',
+        'light-on-surface-container': '#0B1020',
+        'light-on-surface-muted': '#4A5268',
+        'light-outline': '#D0D7D4',
+        'light-outline-strong': '#0B1020',
+        'dark-surface': '#0B1020',
+        'dark-on-surface': '#FFFFFF',
+        'dark-surface-container-low': '#121A30',
+        'dark-on-surface-container-low': '#FFFFFF',
+        'dark-surface-container': '#192442',
+        'dark-on-surface-container': '#FFFFFF',
+        'dark-on-surface-muted': '#A6AEC4',
+        'dark-outline': '#232A3E',
+        'dark-outline-strong': '#FFFFFF',
+      },
+      borderRadius: {
+        'sm': '4px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '16px',
+        'gutter-lg': '24px',
+        'gutter-xl': '32px',
+        'section': '32px',
+        'page-margin': '32px',
+      },
+      fontFamily: {
+        'display': ['"Sora"', 'sans-serif'],
+        'headline': ['"Sora"', 'sans-serif'],
+        'title': ['"Inter"', 'sans-serif'],
+        'body': ['"Inter"', 'sans-serif'],
+        'label': ['"Inter"', 'sans-serif'],
+        'mono': ['"JetBrains Mono"', 'monospace'],
+      },
+      fontSize: {
+        'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '36px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['24px', { lineHeight: '32px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-md': ['18px', { lineHeight: '26px', letterSpacing: '0px', fontWeight: '700' }],
+        'title-md': ['16px', { lineHeight: '24px', letterSpacing: '0px', fontWeight: '600' }],
+        'body-md': ['14px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '400' }],
+        'body-sm': ['12px', { lineHeight: '18px', letterSpacing: '0px', fontWeight: '400' }],
+        'label-lg': ['14px', { lineHeight: '20px', letterSpacing: '0px', fontWeight: '500' }],
+        'label-sm': ['12px', { lineHeight: '16px', letterSpacing: '0.2px', fontWeight: '500' }],
+        'mono-lg': ['28px', { lineHeight: '34px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'mono-md': ['16px', { lineHeight: '22px', letterSpacing: '0px', fontWeight: '600' }],
+        'mono-sm': ['12px', { lineHeight: '16px', letterSpacing: '0px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '120ms',
+        'surface-enter': '220ms',
+        'surface-exit': '150ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+        'surface-exit': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+        'surface-exit': 'cubic-bezier(0.3, 0, 1, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;600;700&amp;family=Sora:wght@700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>.material-symbols-outlined { display: inline-block; width: 1em; height: 1em; line-height: 1 !important; box-sizing: content-box; overflow: hidden; white-space: nowrap; direction: ltr; vertical-align: middle; }</style>
+</head>
+<body class="bg-light-surface dark:bg-dark-surface text-light-on-surface dark:text-dark-on-surface font-body antialiased">
+
+  <div class="w-full bg-light-surface-container dark:bg-dark-surface-container border-b border-light-outline dark:border-dark-outline px-gutter-lg py-1.5 flex items-center justify-between">
+    <div class="flex items-center gap-gutter-sm">
+      <span class="w-2 h-2 rounded-full bg-primary"></span>
+      <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted" data-design-text-token="mono-sm">Offline-ready sync active — changes will sync automatically</span>
+    </div>
+    <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted tabular-nums" data-design-text-token="mono-sm">MTN MoMo Automated Split Rail • 0% Manager Cut</span>
+  </div>
+
+  <div class="min-h-[1024px] flex max-w-[1440px] mx-auto" data-stitch-vh="min-h-[1024px]===min-h-screen">
+    <aside class="w-[240px] shrink-0 min-h-[1024px] border-r border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low flex flex-col justify-between p-gutter-md" data-stitch-vh="min-h-[1024px]===min-h-screen">
+      <div class="flex flex-col gap-gutter-lg">
+        <a href="../home-overview/HomeOverview.html" class="flex items-center gap-gutter-sm px-2 py-1">
+          <span class="w-8 h-8 rounded-md bg-primary text-on-primary flex items-center justify-center font-headline text-title-md font-bold">C</span>
+          <div>
+            <span class="font-headline text-headline-md tracking-tight block leading-none" data-design-text-token="headline-md">CamerHits</span>
+            <span class="font-mono text-mono-sm text-primary uppercase" data-design-text-token="mono-sm">Direct Studio</span>
+          </div>
+        </a>
+
+        <div class="rounded-lg bg-light-surface-container dark:bg-dark-surface-container border border-light-outline dark:border-dark-outline p-3 flex items-center gap-3">
+          <img src="https://lh3.googleusercontent.com/aida/ALJJyrAlLZnsWWDh2rucsubSEta2eLf5MSK_dMDASoE_df_XR3Tki6K4ofQ3QWo7Srh7-rGHIm25tHG-G8obSxc2iE3WY6G-mm-ATmp8lrlDD6wAb-hVOlD2_k7kkMhZ50ValLrNp_xsyB4uT1d5tSnYXFspeTlLtN_ii8AfignJ-H7PueJ23TRSSXDBVy1kxaNKSb0dAFqXboI9vlRCPxNg7G-4YFH32316bh21VwPeOyR51SrJteUY" alt="Kamga Beats" class="w-10 h-10 rounded-full object-cover border border-primary shrink-0">
+          <div class="min-w-0">
+            <div class="flex items-center gap-1">
+              <span class="font-title text-label-lg font-semibold truncate" data-design-text-token="label-lg">Kamga Beats</span>
+              <span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: &#39;FILL&#39; 1;" aria-hidden="true">verified</span>
+            </div>
+            <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted block" data-design-text-token="mono-sm">Direct Artist</span>
+          </div>
+        </div>
+
+        <nav aria-label="Main navigation" class="flex flex-col gap-gutter-lg">
+          <div class="flex flex-col gap-1">
+            <a href="../home-overview/HomeOverview.html" class="flex items-center gap-3 px-3 py-2.5 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">dashboard</span>
+              <span data-design-text-token="label-lg">Home Overview</span>
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <span class="px-3 font-mono text-mono-sm uppercase tracking-wider text-light-on-surface-muted dark:text-dark-on-surface-muted mb-1">B2C • Direct to Fans</span>
+            <a href="../catalog-vault/CatalogVault.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">library_music</span>
+              <span data-design-text-token="label-lg">Catalog</span>
+            </a>
+            <a href="../revenue-bookings/RevenueBookings.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">confirmation_number</span>
+              <span data-design-text-token="label-lg">Events &amp; Tickets</span>
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <span class="px-3 font-mono text-mono-sm uppercase tracking-wider text-light-on-surface-muted dark:text-dark-on-surface-muted mb-1">B2B • Direct Industry</span>
+            <a href="../ai-hit-diagnostic/AiHitDiagnostic.html" class="flex items-center justify-between gap-2 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container font-label text-label-lg transition-colors duration-state-change">
+              <span class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-[20px]" aria-hidden="true">auto_awesome</span>
+                <span data-design-text-token="label-lg">AI Advisor</span>
+              </span>
+              <span class="px-1.5 py-0.5 rounded-full border border-dashed border-light-outline-strong dark:border-dark-outline-strong font-mono text-mono-sm">1</span>
+            </a>
+            <a href="../split-contracts/SplitContracts.html" class="flex items-center gap-3 px-3 py-2 rounded-md bg-accent-tint border border-primary text-primary font-label text-label-lg font-semibold">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">handshake</span>
+              <span data-design-text-token="label-lg">Split Contracts</span>
+            </a>
+            <a href="../dj-promo-bounty/DjPromoBounty.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">album</span>
+              <span data-design-text-token="label-lg">DJ Bounties</span>
+            </a>
+            <a href="../revenue-bookings/RevenueBookings.html" class="flex items-center gap-3 px-3 py-2 rounded-md text-light-on-surface-muted dark:text-dark-on-surface-muted hover:bg-light-surface-container dark:hover:bg-dark-surface-container font-label text-label-lg transition-colors duration-state-change">
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">event_available</span>
+              <span data-design-text-token="label-lg">Direct Bookings</span>
+            </a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="rounded-lg border border-light-outline dark:border-dark-outline p-3 bg-light-surface dark:bg-dark-surface">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="material-symbols-outlined text-primary text-[16px]" aria-hidden="true">bolt</span>
+          <span class="font-mono text-mono-sm font-semibold">No Middlemen</span>
+        </div>
+        <p class="font-body text-body-sm text-light-on-surface-muted dark:text-dark-on-surface-muted">Instant MTN MoMo payouts straight to your wallet.</p>
+      </div>
+    </aside>
+
+    <div class="flex-1 min-w-0 flex flex-col">
+      <header class="sticky top-0 z-20 bg-light-surface dark:bg-dark-surface border-b border-light-outline dark:border-dark-outline px-gutter-xl py-3 flex items-center justify-between gap-gutter-md">
+        <div class="flex items-center gap-gutter-md">
+          <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted uppercase">Role:</span>
+          <div class="inline-flex items-center rounded-md border border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low p-0.5">
+            <button type="button" class="px-2.5 py-1 rounded-sm bg-primary text-on-primary font-label text-label-sm font-semibold">Artist</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">DJ</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">Collaborator</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">Promoter</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">Fan</button>
+            <button type="button" class="px-2.5 py-1 rounded-sm text-light-on-surface-muted dark:text-dark-on-surface-muted font-label text-label-sm">Admin</button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-gutter-sm">
+          <button type="button" class="px-2.5 py-1.5 rounded-md border border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low font-mono text-mono-sm">EN / FR</button>
+          <button id="themeToggle" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low font-label text-label-sm">
+            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">contrast</span>
+            <span data-design-text-token="label-sm">Outdoor Light</span>
+          </button>
+          <button type="button" aria-label="Notifications" class="relative inline-flex items-center justify-center w-9 h-9 rounded-md border border-light-outline dark:border-dark-outline bg-light-surface-container-low dark:bg-dark-surface-container-low">
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">notifications</span>
+            <span class="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-primary text-on-primary font-mono text-mono-sm font-bold">3</span>
+          </button>
+          <a href="../revenue-bookings/RevenueBookings.html" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-tint border border-primary text-primary font-mono text-mono-sm font-semibold tabular-nums">
+            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">account_balance_wallet</span>
+            <span data-design-text-token="mono-sm">284,650 XAF</span>
+          </a>
+        </div>
+      </header>
+
+      <main class="flex-1 p-gutter-xl flex flex-col gap-gutter-lg">
+        <section class="flex items-center justify-between gap-gutter-md">
+          <div>
+            <h1 class="font-headline text-headline-lg" data-design-text-token="headline-lg">Direct One-Click Split Contract Builder</h1>
+            <p class="font-body text-body-md text-light-on-surface-muted dark:text-dark-on-surface-muted" data-design-text-token="body-md">Track: <strong class="text-light-on-surface dark:text-dark-on-surface">Midnight Rain</strong> — Automated MTN MoMo royalty splits locked at 100%.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1.5 rounded-full bg-accent-tint border border-primary font-mono text-mono-sm text-primary font-semibold">Total Locked: 100%</span>
+          </div>
+        </section>
+
+        <!-- 2-Column Desktop Workspace -->
+        <section class="grid grid-cols-12 gap-gutter-lg items-stretch">
+          <!-- Left Column: Collaborator Rows + Two-Tone Savanna Green Donut -->
+          <div class="col-span-7 rounded-lg bg-light-surface-container-low dark:bg-dark-surface-container-low border border-light-outline dark:border-dark-outline p-gutter-lg flex flex-col justify-between gap-gutter-lg">
+            <div class="flex flex-col gap-gutter-md">
+              <div class="flex items-center justify-between">
+                <h2 class="font-headline text-headline-md" data-design-text-token="headline-md">Collaborators &amp; MoMo Numbers</h2>
+                <button type="button" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-light-outline dark:border-dark-outline font-label text-label-sm hover:bg-light-surface-container dark:hover:bg-dark-surface-container">
+                  <span class="material-symbols-outlined text-[16px]" aria-hidden="true">person_add</span>
+                  <span>Add Collaborator</span>
+                </button>
+              </div>
+
+              <!-- Row 1: Kamga Beats (70%) -->
+              <div class="rounded-md bg-light-surface dark:bg-dark-surface border border-light-outline dark:border-dark-outline p-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between gap-4">
+                  <div class="grid grid-cols-3 gap-3 flex-1">
+                    <div>
+                      <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted block">Name</span>
+                      <span class="font-title text-title-md">Kamga Beats</span>
+                    </div>
+                    <div>
+                      <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted block">Role</span>
+                      <span class="font-body text-body-md">Artist (Lead)</span>
+                    </div>
+                    <div>
+                      <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted block">MTN MoMo</span>
+                      <span class="font-mono text-mono-sm tabular-nums">+237 677 41 90 12</span>
+                    </div>
+                  </div>
+                  <span class="font-mono text-mono-lg text-primary font-bold tabular-nums" id="kamgaPctLabel">70%</span>
+                </div>
+                <input id="kamgaSlider" type="range" min="0" max="100" value="70" class="w-full accent-[#1FB574]">
+              </div>
+
+              <!-- Row 2: Producer Njoh (30%) -->
+              <div class="rounded-md bg-light-surface dark:bg-dark-surface border border-light-outline dark:border-dark-outline p-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between gap-4">
+                  <div class="grid grid-cols-3 gap-3 flex-1">
+                    <div>
+                      <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted block">Name</span>
+                      <span class="font-title text-title-md">Producer Njoh</span>
+                    </div>
+                    <div>
+                      <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted block">Role</span>
+                      <span class="font-body text-body-md">Producer</span>
+                    </div>
+                    <div>
+                      <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted block">MTN MoMo</span>
+                      <span class="font-mono text-mono-sm tabular-nums">+237 679 88 14 55</span>
+                    </div>
+                  </div>
+                  <span class="font-mono text-mono-lg font-bold tabular-nums" id="njohPctLabel">30%</span>
+                </div>
+                <input id="njohSlider" type="range" min="0" max="100" value="30" class="w-full accent-[#1FB574]">
+              </div>
+
+              <!-- Validation Banner (Shown when != 100%) -->
+              <div id="splitError" class="hidden rounded-md border-2 border-dashed border-light-outline-strong dark:border-dark-outline-strong p-3 flex items-center gap-2 font-mono text-mono-sm font-bold">
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_downward</span>
+                <span>Split total must equal 100% before PIN signing can proceed.</span>
+              </div>
+            </div>
+
+            <!-- Two-Tone Savanna Green Donut Chart -->
+            <div class="rounded-md bg-light-surface dark:bg-dark-surface border border-light-outline dark:border-dark-outline p-4 flex items-center justify-between gap-6">
+              <div class="flex items-center gap-5">
+                <svg viewBox="0 0 120 120" class="w-28 h-28 -rotate-90 shrink-0">
+                  <circle cx="60" cy="60" r="46" fill="none" stroke="#1FB574" stroke-opacity="0.25" stroke-width="18"></circle>
+                  <circle id="donutArc" cx="60" cy="60" r="46" fill="none" stroke="#1FB574" stroke-width="18" stroke-dasharray="289" stroke-dashoffset="86.7"></circle>
+                </svg>
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-2 font-mono text-mono-sm">
+                    <span class="w-3 h-3 rounded-sm bg-primary inline-block"></span>
+                    <span>Kamga Beats — <strong id="legendKamga">70%</strong></span>
+                  </div>
+                  <div class="flex items-center gap-2 font-mono text-mono-sm">
+                    <span class="w-3 h-3 rounded-sm bg-primary/25 border border-primary inline-block"></span>
+                    <span>Producer Njoh — <strong id="legendNjoh">30%</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right font-mono text-mono-sm">
+                <span class="text-light-on-surface-muted dark:text-dark-on-surface-muted block">Per 500 XAF Sale (Net 480 XAF):</span>
+                <span class="text-primary font-bold">336 XAF Kamga</span> • <span>144 XAF Njoh</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Plain-Language Contract Preview & PIN Signing -->
+          <div class="col-span-5 rounded-lg bg-light-surface-container-low dark:bg-dark-surface-container-low border border-light-outline dark:border-dark-outline p-gutter-lg flex flex-col justify-between gap-gutter-md">
+            <div class="flex flex-col gap-gutter-md">
+              <div class="flex items-center justify-between border-b border-light-outline dark:border-dark-outline pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-[20px]" aria-hidden="true">lock</span>
+                  <h2 class="font-headline text-headline-md" data-design-text-token="headline-md">Contract Preview</h2>
+                </div>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label text-label-sm font-semibold">
+                  <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: &#39;FILL&#39; 1;" aria-hidden="true">verified</span>
+                  <span>Verified on chain</span>
+                </span>
+              </div>
+
+              <!-- Monospace Contract ID -->
+              <div class="rounded-md bg-light-surface dark:bg-dark-surface border border-light-outline dark:border-dark-outline px-3 py-2 flex items-center justify-between">
+                <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted">ID: CH-SPL-2026-8841F</span>
+                <button type="button" aria-label="Copy Contract ID" class="text-primary hover:opacity-80">
+                  <span class="material-symbols-outlined text-[16px]" aria-hidden="true">content_copy</span>
+                </button>
+              </div>
+
+              <!-- Plain-Language Terms -->
+              <div class="rounded-md bg-light-surface dark:bg-dark-surface border border-light-outline dark:border-dark-outline p-4 font-body text-body-md leading-relaxed">
+                <p class="mb-2">Every direct fan purchase or B2B licensing payout for <strong>&#34;Midnight Rain&#34;</strong> is settled automatically via MTN MoMo after the 4% platform rail fee:</p>
+                <ul class="list-disc pl-5 flex flex-col gap-1 font-mono text-mono-sm">
+                  <li><strong>70%</strong> routed instantly to Kamga Beats (+237 677 41 90 12)</li>
+                  <li><strong>30%</strong> routed instantly to Producer Njoh (+237 679 88 14 55)</li>
+                  <li><strong>0%</strong> manager or middleman deduction</li>
+                </ul>
+              </div>
+
+              <!-- Signature Status Pills -->
+              <div class="flex flex-col gap-2">
+                <span class="font-mono text-mono-sm text-light-on-surface-muted dark:text-dark-on-surface-muted uppercase">Signature Status</span>
+                <div class="flex items-center justify-between rounded-md border border-light-outline dark:border-dark-outline p-3">
+                  <span class="font-body text-body-md font-medium">Kamga Beats</span>
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label text-label-sm font-semibold">
+                    <span class="material-symbols-outlined text-[14px]" aria-hidden="true">lock</span>Signed with PIN
+                  </span>
+                </div>
+                <div class="flex items-center justify-between rounded-md border border-dashed border-light-outline-strong dark:border-dark-outline-strong p-3">
+                  <span class="font-body text-body-md font-medium">Producer Njoh</span>
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-light-outline-strong dark:border-dark-outline-strong font-label text-label-sm font-semibold">
+                    Pending PIN
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button data-component-id="button-with-icon" data-component-type="button" data-component-variant="with-icon" type="button" class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-primary text-on-primary font-label text-label-lg font-semibold hover:opacity-90">
+              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">pin</span>
+              <span data-design-text-token="label-lg">Send for PIN Signing</span>
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const themeBtn = document.getElementById('themeToggle');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          root.classList.toggle('dark');
+          themeBtn.querySelector('span:last-child').textContent = root.classList.contains('dark') ? 'Outdoor Light' : 'Studio Dark';
+        });
+      }
+      const kSlider = document.getElementById('kamgaSlider');
+      const nSlider = document.getElementById('njohSlider');
+      const kLabel = document.getElementById('kamgaPctLabel');
+      const nLabel = document.getElementById('njohPctLabel');
+      const lKamga = document.getElementById('legendKamga');
+      const lNjoh = document.getElementById('legendNjoh');
+      const err = document.getElementById('splitError');
+      const arc = document.getElementById('donutArc');
+
+      function updateSplits(source) {
+        let k = parseInt(kSlider.value, 10);
+        let n = parseInt(nSlider.value, 10);
+        if (source === 'k') { n = 100 - k; nSlider.value = n; }
+        if (source === 'n') { k = 100 - n; kSlider.value = k; }
+        kLabel.textContent = k + '%';
+        nLabel.textContent = n + '%';
+        lKamga.textContent = k + '%';
+        lNjoh.textContent = n + '%';
+        const dash = 289 * (1 - k / 100);
+        arc.setAttribute('stroke-dashoffset', dash.toFixed(1));
+        err.classList.toggle('hidden', k + n === 100);
+      }
+      if (kSlider && nSlider) {
+        kSlider.addEventListener('input', () => updateSplits('k'));
+        nSlider.addEventListener('input', () => updateSplits('n'));
+      }
+    })();
+  </script>
+
+
+</body></html>
