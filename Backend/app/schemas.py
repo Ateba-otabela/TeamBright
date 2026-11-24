@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from typing import Literal
 from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, TypeAdapter, field_validator
 
@@ -154,3 +155,93 @@ class VerificationRequestIn(BaseModel):
 class VerificationDecisionIn(BaseModel):
     decision: Literal["approve", "reject"]
     note: str | None = Field(default=None, max_length=2000)
+
+
+class TicketCreateIn(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    event_name: str = Field(min_length=1, max_length=200)
+    event_id: int | None = Field(default=None, ge=1)
+    total_quantity: int = Field(ge=1, le=10000)
+    price_xaf: int = Field(default=0, ge=0, le=100000000)
+    description: str | None = None
+
+    @field_validator("event_name")
+    @classmethod
+    def event_name_not_blank(cls, value):
+        value = value.strip()
+        if not value:
+            raise ValueError("event_name cannot be blank")
+        return value
+
+    @field_validator("price_xaf")
+    @classmethod
+    def validate_paid_price(cls, value):
+        if value != 0 and value < 100:
+            raise ValueError("price_xaf must be 0 or at least 100 XAF")
+        return value
+
+
+class TicketOut(BaseModel):
+    id: int
+    event_id: int | None = None
+    event_name: str
+    total_quantity: int
+    remaining_quantity: int
+    price_xaf: int = 0
+    status: str
+    description: str | None = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TicketPaymentOut(BaseModel):
+    id: int
+    ticket_id: int
+    reference: str
+    amount_xaf: int
+    status: str
+    checkout_url: str | None = None
+    created_at: datetime
+
+
+class EventCreateIn(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    event_name: str = Field(min_length=1, max_length=200)
+    description: str | None = None
+    event_date: datetime | None = None
+    venue: str | None = Field(default=None, max_length=200)
+    city: str | None = Field(default=None, max_length=100)
+
+    @field_validator("event_name")
+    @classmethod
+    def event_name_not_blank(cls, value):
+        value = value.strip()
+        if not value:
+            raise ValueError("event_name cannot be blank")
+        return value
+
+
+class EventOut(BaseModel):
+    id: int
+    artist_id: int
+    event_name: str
+    description: str | None = None
+    event_date: datetime | None = None
+    venue: str | None = None
+    city: str | None = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class EventCollaboratorIn(BaseModel):
+    user_id: int = Field(ge=1)
+
+
+class EventCollaboratorOut(BaseModel) :
+    user_id: int
+    name: str
+    created_at: datetime
