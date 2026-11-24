@@ -4,10 +4,10 @@ const DashboardContext = createContext(null)
 
 export const translations = {
   en: {
-    role: 'Role', artist: 'Artist', dj: 'DJ', collaborator: 'Collaborator', promoter: 'Promoter', fan: 'Fan', admin: 'Admin',
+    role: 'Role', artist: 'Artist', dj: 'DJ', broadcaster: 'Broadcaster', collaborator: 'Collaborator', promoter: 'Promoter', fan: 'Fan', admin: 'Admin',
     language: 'EN / FR', closeNav: 'Close navigation', openNav: 'Open navigation', notifications: 'Notifications', noNotifications: 'No notifications', markRead: 'Mark read', markAllRead: 'Mark all read', notificationOpened: 'Notification opened',
     home: 'Home Overview', catalog: 'Catalog', events: 'Events & Tickets', ai: 'AI Advisor', splits: 'Split Contracts', bounties: 'DJ Bounties', bookings: 'Direct Bookings', transactions: 'Transactions',
-    welcome: 'Welcome back, Kamga Beats', verified: 'Verified Artist', welcomeDetail: 'Direct B2C fan sales and B2B bookings active across Buea, Douala, and Yaoundé.', withdraw: 'Withdraw to MoMo',
+    welcome: 'Welcome back', verified: 'Verified Artist', welcomeDetail: 'Direct B2C fan sales and B2B bookings active across Buea, Douala, and Yaoundé.', withdraw: 'Withdraw to MoMo',
     upload: 'Upload Song', uploadDetail: 'Direct B2C & EPK', diagnosis: 'AI Diagnosis', diagnosisDetail: 'Compare Hit Scores', split: 'Split Contract', splitDetail: 'PIN-signed MoMo splits', broadcast: 'Phone Broadcast', broadcastDetail: 'DJ, radio & TV destinations',
     earnings: 'Total Direct Earnings (Mo)', sales: 'Direct B2C Plays & Sales', spins: 'Verified DJ Spins', bountiesMetric: 'B2B Bounties & Bookings',
     revenueTitle: 'Direct Revenue Over Time (XAF)', revenueDetail: 'Comparing B2C fan sales & tickets vs. B2B bounties & direct bookings (Last 30 Days)',
@@ -17,7 +17,7 @@ export const translations = {
     role: 'Rôle', artist: 'Artiste', dj: 'DJ', collaborator: 'Collaborateur', promoter: 'Promoteur', fan: 'Fan', admin: 'Admin',
     language: 'FR / EN', closeNav: 'Fermer la navigation', openNav: 'Ouvrir la navigation', notifications: 'Notifications', noNotifications: 'Aucune notification', markRead: 'Marquer comme lu', markAllRead: 'Tout marquer comme lu', notificationOpened: 'Notification ouverte',
     home: 'Vue d’ensemble', catalog: 'Catalogue', events: 'Événements & Billets', ai: 'Conseiller IA', splits: 'Contrats de partage', bounties: 'Primes DJ', bookings: 'Réservations directes', transactions: 'Transactions',
-    welcome: 'Bienvenue, Kamga Beats', verified: 'Artiste vérifié', welcomeDetail: 'Ventes directes B2C et réservations B2B actives à Buea, Douala et Yaoundé.', withdraw: 'Retirer vers MoMo',
+    welcome: 'Bienvenue', verified: 'Artiste vérifié', welcomeDetail: 'Ventes directes B2C et réservations B2B actives à Buea, Douala et Yaoundé.', withdraw: 'Retirer vers MoMo',
     upload: 'Téléverser un son', uploadDetail: 'B2C direct & EPK', diagnosis: 'Diagnostic IA', diagnosisDetail: 'Comparer les scores', split: 'Contrat de partage', splitDetail: 'Partages MoMo par PIN', broadcast: 'Diffusion téléphonique', broadcastDetail: 'DJ, radio et télévision',
     earnings: 'Revenus directs totaux (mois)', sales: 'Lectures et ventes B2C directes', spins: 'Passages DJ vérifiés', bountiesMetric: 'Primes et réservations B2B',
     revenueTitle: 'Revenus directs dans le temps (XAF)', revenueDetail: 'Comparaison ventes/billets B2C avec primes/réservations B2B (30 derniers jours)',

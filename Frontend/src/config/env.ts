@@ -1,4 +1,4 @@
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim() || '/api/v1'
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim() || ''
 
 export const env = {
   apiBaseUrl,

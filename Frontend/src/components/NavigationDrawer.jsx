@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useDashboard } from '../dashboardContext'
+import { useAuth } from '../authContext'
 
 const navigation = [
   { label: 'Home Overview', icon: 'dashboard', to: '/' },
@@ -14,6 +15,8 @@ const navigation = [
 
 export default function NavigationDrawer({ open, onClose }) {
   const { t } = useDashboard()
+  const { user } = useAuth()
+  const initials = (user?.name || 'CH').split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()
   const labels = [t.home, t.catalog, t.events, t.ai, t.splits, t.broadcast, t.bookings, t.transactions]
   const translatedNavigation = navigation.map((item, index) => ({ ...item, label: labels[index] }))
   return (
@@ -23,7 +26,7 @@ export default function NavigationDrawer({ open, onClose }) {
           <NavLink className="brand" to="/" onClick={onClose}><span className="brand-mark">C</span><span><strong>CamerHits</strong><small>Direct Studio</small></span></NavLink>
           <button className="icon-button close-button" type="button" onClick={onClose} aria-label="Close navigation">close</button>
         </div>
-        <div className="profile-card"><div className="profile-avatar">KB</div><div><strong>Kamga Beats <span>✓</span></strong><small>Direct Artist</small></div></div>
+        <div className="profile-card"><div className="profile-avatar">{initials}</div><div><strong>{user?.name}{user?.verified && <span> ✓</span>}</strong><small>{user?.role}{user?.city ? ` · ${user.city}` : ''}</small></div></div>
         <nav className="drawer-nav" aria-label="Main navigation">
           {translatedNavigation.map((item) => <div className="nav-item-wrap" key={item.label}>{item.group && <span className="nav-group">{item.group}</span>}<NavLink to={item.to} end={item.to === '/'} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={onClose}><span className="material-icon">{item.icon}</span><span>{item.label}</span>{item.badge && <span className="nav-badge">{item.badge}</span>}</NavLink></div>)}
         </nav>

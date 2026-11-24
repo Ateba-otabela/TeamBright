@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { useDashboard } from '../dashboardContext'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../authContext'
 
-export default function Header({ drawerOpen, onOpenDrawer, language, onToggleLanguage, onToggleTheme, themeLabel }) {
+export default function Header({ drawerOpen, onOpenDrawer, language, onToggleLanguage, onToggleTheme, themeLabel, onLogout }) {
   const { t, notifications, unreadCount, openNotification, markAllRead, walletBalance } = useDashboard()
+  const { user } = useAuth()
   const [panelOpen, setPanelOpen] = useState(false)
   const [opened, setOpened] = useState(null)
-  const roles = [t.artist, t.dj, t.collaborator, t.promoter, t.fan, t.admin]
+  const roleLabels = { artist: t.artist, dj: t.dj, broadcaster: t.broadcaster, collaborator: t.collaborator, promoter: t.promoter, fan: t.fan, admin: t.admin }
+  const roles = Object.values(roleLabels)
   const navigate = useNavigate()
 
   return (
@@ -17,12 +20,13 @@ export default function Header({ drawerOpen, onOpenDrawer, language, onToggleLan
         </button>
         <span className="role-label">{t.role}:</span>
         <div className="role-switcher" aria-label={t.role}>
-          {roles.map((role) => <button type="button" key={role} className={role === t.artist ? 'active' : ''}>{role}</button>)}
+          {roles.map((role) => <button type="button" key={role} className={role === roleLabels[user?.role] ? 'active' : ''}>{role}</button>)}
         </div>
       </div>
       <div className="topbar-actions">
         <button className="control" type="button" onClick={onToggleLanguage}>{t.language}</button>
         <button className="control theme-control" type="button" onClick={onToggleTheme}><span className="material-icon">contrast</span>{themeLabel}</button>
+        <button className="control" type="button" onClick={onLogout}>Sign out</button>
         <div className="notification-wrap">
           <button className="icon-button notification" type="button" aria-label={`${t.notifications} (${unreadCount})`} aria-expanded={panelOpen} onClick={() => setPanelOpen((value) => !value)}>
             notifications{unreadCount > 0 && <span className="notification-count">{unreadCount}</span>}
