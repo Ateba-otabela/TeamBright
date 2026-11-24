@@ -1,6 +1,6 @@
-# Bantu Music 2.0 frontend
+# CamerHits frontend
 
-The frontend is a React + TypeScript + Vite application organized by application concerns and product features.
+React + TypeScript + Vite frontend for CamerHits. Authentication, song uploads, broadcasts, and event management use the FastAPI backend.
 
 ## Setup
 
@@ -10,7 +10,7 @@ copy .env.example .env.local
 npm run dev
 ```
 
-The API client reads `VITE_API_BASE_URL` and is ready to connect to the separate FastAPI service. Feature modules are intentionally structural only until their product requirements are defined.
+By default, the Vite dev server proxies API requests to `http://127.0.0.1:8000`. Set `VITE_API_PROXY_TARGET` in `.env.local` if the backend is elsewhere. For a separately hosted frontend, set `VITE_API_BASE_URL` to the backend origin and configure the backend's `CORS_ORIGINS` as a comma-separated list of allowed frontend origins.
 
 ## Scripts
 

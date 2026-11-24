@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useAuth } from './authContext'
+import { apiClient, getApiErrorMessage } from './services/api/client'
 
 const DashboardContext = createContext(null)
 
@@ -26,15 +28,12 @@ export const translations = {
 }
 
 export function DashboardProvider({ children }) {
+  const { user } = useAuth()
   const [language, setLanguage] = useState(() => localStorage.getItem('camerhits-language') || 'en')
-  const [notifications, setNotifications] = useState(() => {
-    const saved = localStorage.getItem('camerhits-notifications')
-    return saved ? JSON.parse(saved) : [
-      { id: 1, title: 'Midnight Rain score alert', titleFr: 'Alerte score pour Midnight Rain', detail: 'Hit Score dropped to 41.2.', detailFr: 'Le score est passé à 41,2.', read: false },
-      { id: 2, title: 'Buea Town Vibe is live', titleFr: 'Buea Town Vibe est en ligne', detail: '218 direct sales recorded.', detailFr: '218 ventes directes enregistrées.', read: false },
-      { id: 3, title: 'Douala DJ bounty', titleFr: 'Prime DJ de Douala', detail: '15,000 XAF bounty is open.', detailFr: 'La prime de 15 000 XAF est ouverte.', read: false },
-    ]
-  })
+  const [overview, setOverview] = useState(null)
+  const [overviewLoading, setOverviewLoading] = useState(false)
+  const [overviewError, setOverviewError] = useState('')
+  const [notifications, setNotifications] = useState([])
   const [walletBalance, setWalletBalance] = useState(() => Number(localStorage.getItem('camerhits-wallet') || 284650))
   const [transactions, setTransactions] = useState(() => {
     const saved = localStorage.getItem('camerhits-transactions')
@@ -44,6 +43,47 @@ export function DashboardProvider({ children }) {
       { id: 3, date: '2026-11-18', type: 'Withdrawal', typeFr: 'Retrait', destination: '+237 •• •• 650', amount: 50000, status: 'Demo completed', statusFr: 'Démo terminée' },
     ]
   })
+
+  const refreshOverview = useCallback(async (isActive = () => true) => {
+    if (!user) {
+      if (isActive()) {
+        setOverview(null)
+        setOverviewError('')
+        setOverviewLoading(false)
+      }
+      return
+    }
+
+    setOverview(null)
+    setOverviewLoading(true)
+    setOverviewError('')
+    try {
+      const [songs, studio, advisor, events] = await Promise.all([
+        apiClient.get(user.role === 'artist' ? '/songs/mine' : '/songs/recent'),
+        apiClient.get('/analyzer/my-studio'),
+        apiClient.get('/advisor/dashboard'),
+        apiClient.get('/api/events'),
+      ])
+      if (isActive()) {
+        setOverview({
+          songs: songs.data,
+          studio: studio.data,
+          advisor: advisor.data,
+          events: events.data,
+        })
+      }
+    } catch (error) {
+      if (isActive()) setOverviewError(getApiErrorMessage(error, 'Could not load dashboard data.'))
+    } finally {
+      if (isActive()) setOverviewLoading(false)
+    }
+  }, [user?.id, user?.role])
+
+  useEffect(() => {
+    let active = true
+    refreshOverview(() => active)
+    return () => { active = false }
+  }, [refreshOverview])
 
   useEffect(() => { localStorage.setItem('camerhits-language', language) }, [language])
   useEffect(() => { localStorage.setItem('camerhits-notifications', JSON.stringify(notifications)) }, [notifications])
@@ -61,6 +101,10 @@ export function DashboardProvider({ children }) {
     language,
     setLanguage,
     t: translations[language],
+    overview,
+    overviewLoading,
+    overviewError,
+    refreshOverview,
     notifications,
     unreadCount: notifications.filter((item) => !item.read).length,
     openNotification: (id) => setNotifications((items) => items.map((item) => item.id === id ? { ...item, read: true } : item)),
@@ -68,7 +112,7 @@ export function DashboardProvider({ children }) {
     walletBalance,
     transactions,
     submitDemoTransaction,
-  }), [language, notifications, walletBalance, transactions])
+  }), [language, notifications, walletBalance, transactions, overview, overviewLoading, overviewError, refreshOverview])
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>
 }

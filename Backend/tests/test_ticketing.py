@@ -64,6 +64,11 @@ def test_ticket_event_purchase_and_gate_lifecycle(client, test_db):
     assert created.status_code == 201
     event_id = created.json()["event_id"]
 
+    listed = client.get("/api/events", headers=promoter)
+    assert listed.status_code == 200
+    assert listed.json()["items"][0]["event_id"] == event_id
+    assert listed.json()["items"][0]["status"] == "pending"
+
     approved = client.post(
         f"/api/events/{event_id}/decision",
         headers=admin,

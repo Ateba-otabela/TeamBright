@@ -221,6 +221,19 @@ def create_ticket_event(
     return _event_view(event)
 
 
+@router.get("/api/events")
+def list_ticket_events(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    events = db.scalars(
+        select(TicketEvent)
+        .where(TicketEvent.owner_id == user.id)
+        .order_by(TicketEvent.event_date, TicketEvent.id)
+    ).all()
+    return {"items": [_event_view(event) for event in events], "total": len(events)}
+
+
 @router.post("/api/events/{event_id}/decision")
 @router.post("/api/admin/events/{event_id}/decision", include_in_schema=False)
 def decide_event(

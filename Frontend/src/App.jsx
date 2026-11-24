@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './authContext'
+import { getApiAssetUrl } from './services/api/client'
 import Header from './components/Header'
 import NavigationDrawer from './components/NavigationDrawer'
 import StatCard from './components/StatCard'
-import RevenueChart from './components/RevenueChart'
-import AdvisorPanel from './components/AdvisorPanel'
 import CatalogPage from './pages/CatalogPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import EventsTicketsPage from './pages/EventsTicketsPage'
@@ -20,7 +19,7 @@ import LandingPage from './pages/LandingPage'
 import './dashboard.css'
 
 function HomePage({ onAction }) {
-  const { t } = useDashboard()
+  const { t, overview, overviewLoading, overviewError } = useDashboard()
   const { user } = useAuth()
   const navigate = useNavigate()
   const quickActions = [
@@ -33,15 +32,28 @@ function HomePage({ onAction }) {
     <main className="dashboard-content">
       <section className="welcome-row"><div><div className="title-line"><h1>{t.welcome}, {user.name}</h1>{user.verified && <span className="verified">✓ {t.verified}</span>}</div><p>{user.city ? `${user.city} · ` : ''}{user.role}</p></div><button className="primary-button" type="button" onClick={() => { navigate('/transactions') }}><span className="material-icon">account_balance_wallet</span>{t.transactions}</button></section>
       <section className="quick-actions" aria-label="Quick actions">{quickActions.map(([label, detail, icon, action]) => <button className="quick-action" type="button" key={label} onClick={() => onAction(action)}><span className="quick-icon material-icon">{icon}</span><span><strong>{label}</strong><small>{detail}</small></span></button>)}</section>
-      <section className="metrics" aria-label="Dashboard statistics"><StatCard label={t.earnings} value="482,500 XAF" detail="312,000 B2C • 170,500 B2B" badge="+18.4%" /><StatCard label={t.sales} value="340 Sales" detail="7,000 previews across 2 tracks" badge="4.86% conv" /><StatCard label={t.spins} value="621 Spins" detail="450 Buea Town • 171 Midnight Rain" badge="55.8pt" /><StatCard label={t.bountiesMetric} value="15,000 XAF" detail="Douala DJ Bounty + 1 Live Request" badge="Escrowed" /></section>
-      <section className="content-grid"><RevenueChart /><AdvisorPanel onInspect={() => onAction('inspect')} /></section>
+      {overviewError && <p className="form-error" role="alert">{overviewError}</p>}
+      <section className="metrics" aria-label="Dashboard statistics">
+        <StatCard label="Songs available" value={overviewLoading ? '…' : overview ? String(overview.songs.total) : '—'} detail="Loaded from the songs API" badge="API" />
+        <StatCard label="Studio comparisons" value={overviewLoading ? '…' : overview ? String(overview.studio.demos.length) : '—'} detail="Saved SoundDNA analyses" badge="API" />
+        <StatCard label="Your events" value={overviewLoading ? '…' : overview ? String(overview.events.total) : '—'} detail="Ticketing events you own" badge="API" />
+        <StatCard label="Unread insights" value={overviewLoading ? '…' : overview ? String(overview.advisor.unread_alerts_count) : '—'} detail="Canary advisor alerts" badge="API" />
+      </section>
+      <section className="content-grid">
+        <article className="revenue-card"><div className="revenue-heading"><div><h2>Recent songs</h2><p>Current records from the CamerHits API</p></div><button className="event-outline-button" type="button" onClick={() => navigate('/catalog')}>Open Catalog</button></div>
+          {overviewLoading && <p role="status">Loading songs…</p>}
+          {!overviewLoading && overview?.songs.items.length === 0 && <p>No songs are available yet.</p>}
+          {!overviewLoading && overview?.songs.items.map((song) => <div className="advisor-insight" key={song.id}><div><strong>{song.title}</strong><p>{song.artist_name}</p></div><a href={getApiAssetUrl(song.audio_url)} target="_blank" rel="noreferrer">Play</a></div>)}
+        </article>
+        <aside className="advisor-card"><div className="advisor-heading"><b>CANARY ADVISOR</b><span className="advisor-badge">LIVE</span></div><h2>{overview?.advisor.weekly_momentum_status?.replaceAll('_', ' ') || 'No release data'}</h2><p>{overview?.advisor.insights?.[0]?.recommendation || 'Release and airplay snapshots will appear here when available.'}</p><button className="primary-button full" type="button" onClick={() => navigate('/ai-advisor')}>Open AI Advisor</button></aside>
+      </section>
     </main>
   )
 }
 
 function AppShell() {
   const { language, setLanguage, t } = useDashboard()
-  const { user, loading, logout } = useAuth()
+  const { user, loading, connectionError, retrySession, logout } = useAuth()
   const location = useLocation()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [activeModal, setActiveModal] = useState(null)
@@ -61,6 +73,9 @@ function AppShell() {
 
   if (loading) {
     return <main className="app-loading" role="status">Connecting to CamerHits…</main>
+  }
+  if (connectionError && !user) {
+    return <main className="api-connection-error" role="alert"><h1>Backend connection failed</h1><p>{connectionError}</p><button className="primary-button" type="button" onClick={retrySession}>Retry connection</button></main>
   }
   if (!user) {
     if (location.pathname === '/login') {

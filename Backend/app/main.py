@@ -4,8 +4,10 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from app.config import get_settings
 from app.db import Base, engine
 from app.errors import install_error_handlers, error_payload
 from app.routers import auth, users, profiles, verification, directory, follows, admin
@@ -39,6 +41,15 @@ app = FastAPI(
 )
 app.state.clock = SystemClock()
 app.state.database_engine = engine
+
+cors_origins = get_settings().cors_origin_list
+if cors_origins:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.middleware("http")

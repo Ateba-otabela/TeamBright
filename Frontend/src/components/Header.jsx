@@ -51,7 +51,7 @@ export default function Header({ drawerOpen, onOpenDrawer, language, onToggleLan
             </section>
           )}
         </div>
-        <button className="wallet" type="button" onClick={() => navigate('/transactions')}><span className="material-icon">account_balance_wallet</span>{walletBalance.toLocaleString()} XAF</button>
+        <button className="wallet" type="button" onClick={() => navigate('/transactions')}><span className="material-icon">account_balance_wallet</span><span className="wallet-label">Demo</span>{walletBalance.toLocaleString()} XAF</button>
       </div>
     </header>
   )

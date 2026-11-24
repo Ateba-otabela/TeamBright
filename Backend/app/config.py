@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     access_token_minutes: int = 60
     env: str = "development"
     platform_fee_percent: Decimal = Field(default=Decimal("5.00"), ge=0, le=100)
+    cors_origins: str = ""
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
 @lru_cache
