@@ -189,3 +189,62 @@ def test_tracks_require_authorization_and_receiver_controls_inbox_status(client)
         headers=auth(fan_token),
         json={"status": "declined"},
     ).status_code == 403
+
+    assert client.patch(
+        f"/api/broadcast/{dispatch_id}/status",
+        headers=auth(station_token),
+        json={"status": "played"},
+    ).status_code == 400
+
+    assert client.patch(
+        f"/api/broadcast/{dispatch_id}/status",
+        headers=auth(station_token),
+        json={"status": "delivered"},
+    ).status_code == 200
+
+    played = client.patch(
+        f"/api/broadcast/{dispatch_id}/status",
+        headers=auth(station_token),
+        json={"status": "played"},
+    )
+    assert played.status_code == 200
+    assert played.json()["status"] == "played"
+
+    final_update = client.patch(
+        f"/api/broadcast/{dispatch_id}/status",
+        headers=auth(station_token),
+        json={"status": "declined"},
+    )
+    assert final_update.status_code == 400
+
+
+def test_broadcast_rejects_duplicate_delivered_status(client):
+    _, artist_token = register_and_login(client, phone="690123470", role="artist")
+    station_id, station_token = register_and_login(
+        client, phone="690123471", role="broadcaster", name="Status Radio"
+    )
+    create_profile(client, station_token, role="broadcaster", name="Status Radio")
+    track = client.post(
+        "/api/tracks",
+        headers=auth(artist_token),
+        json={"title": "Status Test", "genre": "Urban", "audio_url": "https://audio.example/status.mp3"},
+    ).json()
+    dispatch = client.post(
+        "/api/broadcast/execute",
+        headers=auth(artist_token),
+        json={"track_id": track["id"], "destination_id": station_id},
+    ).json()["dispatches"][0]
+
+    first = client.patch(
+        f"/api/broadcast/{dispatch['id']}/status",
+        headers=auth(station_token),
+        json={"status": "delivered"},
+    )
+    assert first.status_code == 200
+
+    duplicate = client.patch(
+        f"/api/broadcast/{dispatch['id']}/status",
+        headers=auth(station_token),
+        json={"status": "delivered"},
+    )
+    assert duplicate.status_code == 400

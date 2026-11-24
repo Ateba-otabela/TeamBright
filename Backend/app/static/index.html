@@ -77,11 +77,21 @@
     .song-card h3 { margin-bottom: 5px; font-size: .98rem; }
     .song-card p { margin-bottom: 0; color: var(--muted); font-size: .84rem; }
     .song-card audio { width: 100%; }
+    .broadcast-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .choice-list { display: grid; gap: 8px; max-height: 280px; overflow-y: auto; }
+    .choice { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-soft); padding: 10px 12px; color: var(--text); }
+    .choice input { width: auto; accent-color: var(--accent); }
+    .dispatch-list { display: grid; gap: 10px; }
+    .dispatch-card { border: 1px solid var(--line); border-radius: 12px; background: var(--panel-soft); padding: 13px 15px; }
+    .dispatch-card h3 { font-size: .92rem; margin-bottom: 5px; }
+    .dispatch-meta { display: flex; flex-wrap: wrap; gap: 7px; color: var(--muted); font-size: .82rem; }
+    .dispatch-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .dispatch-status { display: inline-flex; border-radius: 99px; background: #34394b; color: var(--text); padding: 4px 8px; font-size: .75rem; font-weight: 750; }
     footer { margin-top: 30px; text-align: center; color: var(--muted); font-size: .8rem; }
     @media (max-width: 760px) {
       header { align-items: flex-start; flex-direction: column; }
       .account { flex-wrap: wrap; }
-      .layout { grid-template-columns: 1fr; }
+      .layout, .broadcast-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 460px) {
       .shell { padding: 20px 14px 42px; }
@@ -114,6 +124,7 @@
       <button class="tab active" data-tab="analyzer">1. AI Viral DNA Analyzer</button>
       <button class="tab" data-tab="advisor">2. Weekly AI Advisor</button>
       <button class="tab" data-tab="songs">3. Song releases</button>
+      <button class="tab" data-tab="broadcast">4. Broadcast desk</button>
     </nav>
 
     <section id="analyzer" class="tab-content">
@@ -212,6 +223,32 @@
             <button class="secondary" id="refresh-songs" type="button">Refresh</button>
           </div>
           <div id="recent-songs" class="song-list" aria-live="polite"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="broadcast" class="tab-content hidden">
+      <div class="broadcast-grid">
+        <article class="panel" id="broadcast-send-panel">
+          <div class="section-head">
+            <div><h2>Send a track</h2><p class="muted">Choose stations or DJs for your next release.</p></div>
+            <button class="secondary" id="refresh-broadcast" type="button">Refresh</button>
+          </div>
+          <form id="broadcast-form">
+            <label>Track<select name="track_id" id="broadcast-track" required><option value="">Sign in as an artist</option></select></label>
+            <label>Destinations<div class="choice-list" id="broadcast-destinations"></div></label>
+            <label>Pitch note<textarea name="note" maxlength="2000" rows="3" placeholder="Please introduce the new single."></textarea></label>
+            <button class="primary" type="submit">Send broadcast</button>
+          </form>
+          <p class="status" id="broadcast-status" role="status"></p>
+        </article>
+        <article class="panel">
+          <h2>Inbox and sent</h2>
+          <p class="muted">Track dispatches and update receiver status.</p>
+          <h3>Received</h3>
+          <div id="broadcast-inbox" class="dispatch-list"></div>
+          <h3 style="margin-top:18px">Sent</h3>
+          <div id="broadcast-sent" class="dispatch-list"></div>
         </article>
       </div>
     </section>

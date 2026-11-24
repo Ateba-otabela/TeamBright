@@ -34,6 +34,31 @@ cd Backend
 
 Stop the server with `Ctrl+C`.
 
+## API-only run
+
+The broadcast functionality is a backend API and does not require the Vite frontend. From the repository root:
+
+```powershell
+cd Backend
+$python = "C:/Users/BHGJJ/AppData/Local/Programs/Python/Python313/python.exe"
+& $python seed_demo.py
+& $python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Open `http://127.0.0.1:8000/docs` for Swagger UI or `http://127.0.0.1:8000/redoc` for Redoc. Interactive API calls use the `/auth/login` `access_token` as `Authorization: Bearer <token>`.
+
+## Broadcast API lifecycle
+
+1. Register or sign in as an artist/collaborator.
+2. Register an audio track with `POST /api/tracks`.
+3. Publicly discover eligible stations/DJs with `GET /api/broadcast/destinations`. Use `type`, `city`, `verified_only`, or `q` to filter results.
+4. Send a track with `POST /api/broadcast/execute`, providing `track_id` and either `destination_id` or `destination_ids`.
+5. Track owner reviews dispatches with `GET /api/broadcast/sent`.
+6. Each receiver reviews dispatches with `GET /api/broadcast/inbox`.
+7. The receiver updates a dispatch with `PATCH /api/broadcast/{dispatch_id}/status`.
+
+Allowed status transitions are `sent -> delivered -> played`, or `sent/delivered -> declined`. A track owner cannot update a dispatch; only the receiving broadcaster or DJ can change its status.
+
 ### Tests
 
 Run the complete backend suite from `Backend/`:
@@ -122,6 +147,14 @@ All API errors use `{"error":{"code":"...","message":"...","details":{...}}}`. V
 | `GET` | `/api/tickets/qr/{qr_token}` | Public | Render a sold or checked-in ticket QR image |
 | `POST` | `/api/gate/scan` | Gate staff/authorized organizer | Validate or check in a ticket |
 | `POST` | `/api/admin/users/{user_id}/gate-staff` | Admin | Promote a user to gate staff |
+| `POST` | `/api/tracks` | Artist/collaborator | Register an audio track for broadcast |
+| `GET` | `/api/tracks/mine` | Authenticated artist/collaborator | List owned tracks |
+| `GET` | `/api/broadcast/destinations` | Public | Filter broadcasters and DJs for pitch dispatch |
+| `GET` | `/api/broadcast/tracks` | Authenticated owner | List available owned tracks |
+| `POST` | `/api/broadcast/execute` | Track owner | Send a track to one or more broadcasters/DJs |
+| `GET` | `/api/broadcast/sent` | Track owner | List dispatched broadcasts |
+| `GET` | `/api/broadcast/inbox` | Broadcaster/DJ | List received broadcasts |
+| `PATCH` | `/api/broadcast/{dispatch_id}/status` | Receiver | Set a dispatch to delivered, played, or declined |
 
 `/directory` accepts `role`, `city`, `genre`, `verified`, `q`, `limit` (1–50), and `offset`. Directory results include only active users with public artist, DJ, broadcaster, or promoter profiles.
 
@@ -190,6 +223,29 @@ Invoke-RestMethod "$base/advisor/dashboard" -Headers $headers
 ```
 
 For multipart Analyzer uploads, use the browser UI or `curl.exe -F`; see `/docs` for the request schema and error responses.
+
+## Broadcast API example
+
+```powershell
+# Sign in and receive a bearer token.
+$artist = (curl.exe -s -X POST http://127.0.0.1:8000/auth/login -H "Content-Type: application/json" -d '{"phone":"690111111","pin":"1234"}' | ConvertFrom-Json).access_token
+
+# Register a track.
+$track = curl.exe -s -X POST http://127.0.0.1:8000/api/tracks -H "Authorization: Bearer $artist" -H "Content-Type: application/json" -d '{"title":"Buea Nights","genre":"Makossa","duration_seconds":185,"audio_url":"https://audio.example/buea-nights.mp3"}' | ConvertFrom-Json
+
+# Discover and dispatch to destinations.
+curl.exe -s "http://127.0.0.1:8000/api/broadcast/destinations?q=Radio"
+curl.exe -s -X POST http://127.0.0.1:8000/api/broadcast/execute -H "Authorization: Bearer $artist" -H "Content-Type: application/json" -d '{"track_id":1,"destination_id":2,"note":"Please introduce the new single."}'
+
+# Review sent dispatches.
+curl.exe -s http://127.0.0.1:8000/api/broadcast/sent -H "Authorization: Bearer $artist"
+```
+
+A receiver updates dispatch status with:
+
+```powershell
+curl.exe -s -X PATCH http://127.0.0.1:8000/api/broadcast/1/status -H "Authorization: Bearer $station" -H "Content-Type: application/json" -d '{"status":"delivered"}'
+```
 
 ## Scenario with curl
 

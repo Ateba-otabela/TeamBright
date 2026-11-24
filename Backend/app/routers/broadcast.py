@@ -31,7 +31,7 @@ def _track_view(track: Track) -> dict:
 def _destination_view(user: User, profile: Profile) -> dict:
     details = profile.details or {}
     if user.role == "dj":
-        label = f"DJ / JJ — {profile.display_name} ({user.city})"
+        label = f"DJ — {profile.display_name} ({user.city})"
         medium = "dj"
     else:
         station_name = details.get("station_name") or profile.display_name
@@ -102,7 +102,7 @@ def my_tracks(
         select(Track)
         .where(Track.owner_id == user.id)
         .order_by(Track.created_at.desc(), Track.id.desc())
-    ).all()
+    ).scalars().all()
     return {"items": [_track_view(track) for track in tracks], "total": len(tracks)}
 
 
@@ -147,7 +147,7 @@ def available_tracks(
         select(Track)
         .where(Track.owner_id == user.id, Track.is_available.is_(True))
         .order_by(Track.created_at.desc(), Track.id.desc())
-    ).all()
+    ).scalars().all()
     return {
         "items": [
             {
@@ -280,10 +280,16 @@ def update_broadcast_status(
         error("dispatch_not_found", "Broadcast dispatch not found", 404)
     if dispatch.destination_user_id != user.id:
         error("dispatch_forbidden", "Only the receiving destination can update this dispatch", 403)
-    if dispatch.status not in {"sent", "delivered"}:
+    allowed_statuses = {
+        "sent": {"delivered", "declined"},
+        "delivered": {"played", "declined"},
+    }
+    if dispatch.status not in allowed_statuses:
         error("invalid_status_transition", "This dispatch already has a final status", 400)
-    if dispatch.status == "sent" and payload.status == "played":
-        error("invalid_status_transition", "A dispatch must be delivered before it can be played", 400)
+    if payload.status not in allowed_statuses[dispatch.status]:
+        if dispatch.status == "sent" and payload.status == "played":
+            error("invalid_status_transition", "A dispatch must be delivered before it can be played", 400)
+        error("invalid_status_transition", f"Cannot change status from {dispatch.status} to {payload.status}", 400)
 
     dispatch.status = payload.status
     db.add(dispatch)
