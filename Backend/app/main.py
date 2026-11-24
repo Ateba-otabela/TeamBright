@@ -9,8 +9,10 @@ from fastapi.staticfiles import StaticFiles
 from app.db import Base, engine
 from app.errors import install_error_handlers, error_payload
 from app.routers import auth, users, profiles, verification, directory, follows, admin
-from app.routers import analyzer, canary_advisor, events, songs
+from app.routers import analyzer, broadcast, canary_advisor, events, songs, ticketing
 from app.security import SystemClock
+from migrations.upgrade_events_tickets import upgrade as upgrade_events_tickets
+from migrations.upgrade_broadcast import upgrade as upgrade_broadcast
 
 logger = logging.getLogger("sounddna")
 
@@ -19,6 +21,8 @@ STATIC_DIR = Path(__file__).parent / "static"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    upgrade_events_tickets(engine)
+    upgrade_broadcast(engine)
     Base.metadata.create_all(bind=engine)
     app.state.database_engine = engine
     yield
@@ -96,7 +100,9 @@ app.include_router(admin.router)
 app.include_router(analyzer.router)
 app.include_router(canary_advisor.router)
 app.include_router(events.router)
+app.include_router(ticketing.router)
 app.include_router(songs.router)
+app.include_router(broadcast.router)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 

@@ -151,8 +151,13 @@ class TicketEvent(SQLModel, table=True):
     title: str = Field(sa_type=String(200))
     event_date: datetime = Field(sa_type=DateTime(timezone=True))
     venue: str = Field(sa_type=String(200))
-    ticket_price: Decimal = Field(gt=0, sa_type=Numeric(10, 2))
+    ticket_price: Decimal = Field(default=Decimal("0"), ge=0, sa_type=Numeric(10, 2))
     total_tickets: int = Field(gt=0)
+    category: str = Field(default="other", sa_type=String(30))
+    city: str = Field(default="", sa_type=String(100))
+    artist_momo_number: str = Field(default="", sa_type=String(32))
+    status: str = Field(default="pending", sa_column=Column(String(20), nullable=False, server_default="pending", index=True))
+    minted_count: int = Field(default=0, ge=0)
     created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
 
 
@@ -161,16 +166,79 @@ class EventCollaborator(SQLModel, table=True):
     __table_args__ = (
         UniqueConstraint("event_id", "email", name="uq_event_collaborator_email"),
         UniqueConstraint("event_id", "phone", name="uq_event_collaborator_phone"),
+        UniqueConstraint("event_id", "user_id", name="uq_event_collaborator_user"),
+        UniqueConstraint("event_id", "promo_code", name="uq_event_collaborator_promo"),
     )
 
     id: int | None = Field(default=None, primary_key=True)
     event_id: int = Field(foreign_key="ticket_events.id", index=True)
+    user_id: int | None = Field(default=None, foreign_key="users.id", index=True)
     name: str = Field(sa_type=String(200))
     email: str | None = Field(default=None, sa_type=String(254))
     phone: str | None = Field(default=None, sa_type=String(32))
     commission_percent: Decimal = Field(ge=0, le=100, sa_type=Numeric(5, 2))
     tickets_assigned: int = Field(gt=0)
     tickets_sold: int = Field(default=0, ge=0)
+    promo_code: str | None = Field(default=None, sa_type=String(40), index=True)
+    assigned_quota: int = Field(default=0, ge=0)
+    allow_over_quota: bool = Field(default=False, sa_type=Boolean)
+    sold_count: int = Field(default=0, ge=0)
+    status: str = Field(default="pending", sa_type=String(20), index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
+
+
+class TicketTier(SQLModel, table=True):
+    __tablename__ = "ticket_tiers"
+    __table_args__ = (
+        UniqueConstraint("event_id", "name", name="uq_ticket_tier_event_name"),
+    )
+
+    id: int | None = Field(default=None, primary_key=True)
+    event_id: int = Field(foreign_key="ticket_events.id", index=True)
+    name: str = Field(sa_type=String(100))
+    price: Decimal = Field(ge=0, sa_type=Numeric(10, 2))
+    zone_label: str = Field(sa_type=String(120))
+    quantity: int = Field(gt=0)
+    minted_count: int = Field(default=0, ge=0)
+    created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
+
+
+class Ticket(SQLModel, table=True):
+    __tablename__ = "tickets"
+    __table_args__ = (
+        UniqueConstraint("ticket_code", name="uq_ticket_code"),
+        UniqueConstraint("qr_token", name="uq_ticket_qr_token"),
+        UniqueConstraint("payment_ref", name="uq_ticket_payment_ref"),
+    )
+
+    id: int | None = Field(default=None, primary_key=True)
+    ticket_code: str = Field(sa_type=String(24), index=True)
+    qr_token: str = Field(sa_type=String(128), index=True)
+    tier_id: int = Field(foreign_key="ticket_tiers.id", index=True)
+    event_id: int = Field(foreign_key="ticket_events.id", index=True)
+    status: str = Field(default="available", sa_type=String(20), index=True)
+    collaborator_id: int | None = Field(default=None, foreign_key="event_collaborators.id", index=True)
+    buyer_name: str | None = Field(default=None, sa_type=String(200))
+    buyer_phone: str | None = Field(default=None, sa_type=String(32))
+    amount_paid: Decimal = Field(default=Decimal("0"), ge=0, sa_type=Numeric(10, 2))
+    payment_ref: str | None = Field(default=None, sa_type=String(120))
+    checked_in_at: datetime | None = Field(default=None, sa_type=DateTime(timezone=True))
+    checked_in_by: int | None = Field(default=None, foreign_key="users.id")
+    created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
+
+
+class PayoutLedger(SQLModel, table=True):
+    __tablename__ = "payout_ledger"
+    __table_args__ = (UniqueConstraint("ticket_id", name="uq_payout_ticket"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    ticket_id: int = Field(foreign_key="tickets.id", index=True)
+    event_id: int = Field(foreign_key="ticket_events.id", index=True)
+    collaborator_id: int | None = Field(default=None, foreign_key="event_collaborators.id", index=True)
+    amount_paid: Decimal = Field(ge=0, sa_type=Numeric(10, 2))
+    organizer_amount: Decimal = Field(ge=0, sa_type=Numeric(10, 2))
+    collaborator_amount: Decimal = Field(ge=0, sa_type=Numeric(10, 2))
+    platform_fee: Decimal = Field(ge=0, sa_type=Numeric(10, 2))
     created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
 
 
@@ -184,6 +252,34 @@ class Song(SQLModel, table=True):
     audio_size: int = Field(gt=0)
     active: bool = Field(default=True, sa_type=Boolean, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
+
+
+class Track(SQLModel, table=True):
+    __tablename__ = "tracks"
+
+    id: int | None = Field(default=None, primary_key=True)
+    owner_id: int = Field(foreign_key="users.id", index=True)
+    title: str = Field(sa_type=String(200))
+    artist_name: str = Field(sa_type=String(200))
+    genre: str = Field(sa_type=String(100), index=True)
+    duration_seconds: int | None = Field(default=None, ge=0)
+    audio_url: str | None = Field(default=None, sa_type=String(2048))
+    file_path: str | None = Field(default=None, sa_type=String(2048))
+    is_available: bool = Field(default=True, sa_type=Boolean, index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
+
+
+class BroadcastDispatch(SQLModel, table=True):
+    __tablename__ = "broadcast_dispatches"
+
+    id: int | None = Field(default=None, primary_key=True)
+    sender_id: int = Field(foreign_key="users.id", index=True)
+    track_id: int = Field(foreign_key="tracks.id", index=True)
+    destination_user_id: int = Field(foreign_key="users.id", index=True)
+    destination_label: str = Field(sa_type=String(300))
+    note: str | None = Field(default=None, sa_type=Text)
+    status: str = Field(default="sent", sa_type=String(20), index=True)
+    sent_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True), index=True)
 
 
 class AirplayLog(SQLModel, table=True):

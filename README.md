@@ -1,6 +1,6 @@
 # TeamBright — SoundDNA Studio
 
-Accounts, profiles, music discovery, SoundDNA audio analysis, Canary Spider release monitoring, and career insights for the CIMFEST 2026 Cameroon demo.
+Accounts, profiles, music discovery, SoundDNA audio analysis, Canary Spider release monitoring, career insights, event ticketing, and gate check-in for the CIMFEST 2026 Cameroon demo.
 
 ## Requirements and setup
 
@@ -43,11 +43,12 @@ $env:NUMBA_DISABLE_JIT = "1"
 & $python -m pytest -q
 ```
 
-Run only the Canary Spider tests:
+Run only the Canary Spider or event/ticketing tests:
 
 ```powershell
-$env:NUMBA_DISABLE_JIT = "1"
+$env:NUMBA_DISABLE_JIT="1"
 & $python -m pytest tests/test_canary.py -q
+& $python -m pytest tests/test_events.py tests/test_ticketing.py -q
 ```
 
 To load the SoundDNA and Canary-specific demo account, benchmark, example demo versions, release, and weekly snapshots, run `python seed_demo.py` from `Backend/` instead of `python -m scripts.seed`. The demo login is `+237699556677` with PIN `5555`; generated WAV fixtures are in `Backend/demo_audio/`. Both seeders are safe to rerun for their own records. The general account seeder uses `DEMO_PIN` (default `1234`).
@@ -111,6 +112,16 @@ All API errors use `{"error":{"code":"...","message":"...","details":{...}}}`. V
 | `POST` | `/events/{event_id}/collaborators` | Event owner | Assign a ticket seller and commission |
 | `GET` | `/events/{event_id}/collaborators` | Event owner | List collaborators and ticket balances |
 | `POST` | `/events/{event_id}/collaborators/{collaborator_id}/sales` | Event owner | Record tickets sold against an assignment |
+| `POST` | `/api/events` | Artist/promoter | Create an approved-ticket workflow event |
+| `POST` | `/api/events/{event_id}/decision` | Admin | Approve or reject an event |
+| `POST` | `/api/events/{event_id}/ticket-tiers` | Event owner | Add a priced ticket tier |
+| `POST` | `/api/events/{event_id}/tickets/mint` | Event owner | Mint signed QR tickets for a tier |
+| `POST` | `/api/events/{event_id}/tickets/purchase` | Public | Purchase an available ticket and create payout records |
+| `GET` | `/api/events/{event_id}/dashboard` | Event owner | Read capacity, sales, revenue, tiers, and collaborators |
+| `GET` | `/api/events/{event_id}/availability` | Event owner | Read ticket availability metrics |
+| `GET` | `/api/tickets/qr/{qr_token}` | Public | Render a sold or checked-in ticket QR image |
+| `POST` | `/api/gate/scan` | Gate staff/authorized organizer | Validate or check in a ticket |
+| `POST` | `/api/admin/users/{user_id}/gate-staff` | Admin | Promote a user to gate staff |
 
 `/directory` accepts `role`, `city`, `genre`, `verified`, `q`, `limit` (1–50), and `offset`. Directory results include only active users with public artist, DJ, broadcaster, or promoter profiles.
 
@@ -121,6 +132,12 @@ Song uploads are stored as MP3 files in `Backend/uploads/songs`; the public song
 Create an event with `POST /events` using `title`, ISO-formatted `event_date`, `venue`, `ticket_price`, and `total_tickets`. Add collaborators through `POST /events/{event_id}/collaborators` with a `name`, exactly one contact field (`email` or `phone`), `commission_percent`, and `tickets_assigned`. Commission is calculated per ticket from the event's ticket price. Total assignments cannot exceed the event capacity.
 
 The event owner records sales with `POST /events/{event_id}/collaborators/{collaborator_id}/sales` and `{"quantity": 3}`. The API tracks tickets sold and remaining, and rejects sales above the collaborator's allocation. Events and collaborator records are private to the user who created the event. Collaborators are stored as contact records; this feature does not create user accounts or send invitations.
+
+## Event ticket lifecycle
+
+For the full ticket workflow, an artist or promoter creates `POST /api/events`, an admin approves it with `POST /api/events/{event_id}/decision`, and the owner adds priced tiers with `POST /api/events/{event_id}/ticket-tiers`. Mint tickets with `POST /api/events/{event_id}/tickets/mint`, then accept purchases through `POST /api/events/{event_id}/tickets/purchase`. Each sale is assigned a signed QR token and split between the organizer, collaborator, and platform according to the configured fees.
+
+Assign a collaborator account with `POST /api/events/{event_id}/collaborators` using a user ID, commission, quota, optional over-quota setting, and promo code. The collaborator accepts the offer through `POST /api/collaborators/{collaborator_id}/accept`. At the gate, send exactly one `ticket_code` or signed `qr_token` to `POST /api/gate/scan`. The endpoint permits an organizer or administrator, or a user promoted to `gate_staff` with `POST /api/admin/users/{user_id}/gate-staff`.
 
 ## SoundDNA Analyzer and Canary Spider
 

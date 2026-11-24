@@ -1,5 +1,5 @@
 from typing import Literal
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, TypeAdapter, field_validator
+from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, TypeAdapter, field_validator, model_validator
 from app.security import normalize_phone
 
 
@@ -141,3 +141,52 @@ class VerificationRequestIn(BaseModel):
 class VerificationDecisionIn(BaseModel):
     decision: Literal["approve", "reject"]
     note: str | None = Field(default=None, max_length=2000)
+
+
+class TrackCreateIn(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+    artist_name: str | None = Field(default=None, max_length=200)
+    genre: str = Field(min_length=1, max_length=100)
+    duration_seconds: int | None = Field(default=None, ge=0)
+    audio_url: str | None = Field(default=None, max_length=2048)
+    file_path: str | None = Field(default=None, max_length=2048)
+
+    @field_validator("title", "genre", "artist_name", "audio_url", "file_path")
+    @classmethod
+    def strip_text(cls, value):
+        return value.strip() if value is not None else value
+
+    @model_validator(mode="after")
+    def track_location_required(self):
+        if not self.audio_url and not self.file_path:
+            raise ValueError("audio_url or file_path is required")
+        return self
+
+
+class BroadcastExecuteIn(BaseModel):
+    track_id: int = Field(gt=0)
+    destination_id: int | None = Field(default=None, gt=0)
+    destination_ids: list[int] | None = Field(default=None, min_length=1, max_length=50)
+    note: str | None = Field(default=None, max_length=2000)
+
+    @field_validator("destination_ids")
+    @classmethod
+    def valid_destination_ids(cls, value):
+        if value is not None and (any(item <= 0 for item in value) or len(set(value)) != len(value)):
+            raise ValueError("destination_ids must contain unique positive IDs")
+        return value
+
+    @field_validator("note")
+    @classmethod
+    def strip_note(cls, value):
+        return value.strip() if value is not None else value
+
+    @model_validator(mode="after")
+    def destination_required(self):
+        if (self.destination_id is None) == (self.destination_ids is None):
+            raise ValueError("provide either destination_id or destination_ids")
+        return self
+
+
+class BroadcastStatusIn(BaseModel):
+    status: Literal["delivered", "played", "declined"]

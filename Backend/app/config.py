@@ -1,4 +1,7 @@
 from functools import lru_cache
+from decimal import Decimal
+
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,6 +13,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_minutes: int = 60
     env: str = "development"
+    platform_fee_percent: Decimal = Field(default=Decimal("5.00"), ge=0, le=100)
 
 
 @lru_cache
