@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11131b">
+  <title>SoundDNA Studio | CIMFEST 2026</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #11131b;
+      --panel: #1a1d29;
+      --panel-soft: #222636;
+      --text: #f3f4f8;
+      --muted: #9da4b8;
+      --accent: #c5f36a;
+      --purple: #a895ff;
+      --line: #303548;
+      --danger: #ff7c89;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(ellipse at 10% 0%, #232743 0, var(--bg) 42%); color: var(--text); min-height: 100vh; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .shell { max-width: 1160px; margin: auto; padding: 28px 22px 60px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 32px; }
+    .brand { display: flex; gap: 14px; align-items: center; }
+    .mark { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; color: #14190c; font-weight: 900; background: var(--accent); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(1.35rem, 3vw, 2rem); margin-bottom: 4px; letter-spacing: -.04em; }
+    .subtitle, .muted { color: var(--muted); }
+    .subtitle { margin: 0; font-size: .92rem; }
+    .account { display: flex; align-items: center; gap: 9px; }
+    .account input { width: 124px; }
+    .account input, input, select, textarea { border: 1px solid var(--line); background: #121520; color: var(--text); border-radius: 10px; padding: 11px 12px; }
+    .account button, .primary { border: 0; color: #13190b; background: var(--accent); font-weight: 750; border-radius: 10px; padding: 11px 15px; }
+    .secondary, .tab { color: var(--text); background: var(--panel-soft); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+    .tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--line); margin-bottom: 22px; }
+    .tab { border: 0; background: transparent; color: var(--muted); border-radius: 10px 10px 0 0; }
+    .tab.active { color: var(--accent); box-shadow: inset 0 -2px var(--accent); }
+    .layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .panel { background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid var(--line); border-radius: 17px; padding: 22px; }
+    .panel h2 { font-size: 1.1rem; margin-bottom: 6px; }
+    .panel > p { line-height: 1.55; }
+    label { display: grid; gap: 7px; color: var(--muted); font-size: .86rem; }
+    form { display: grid; gap: 12px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    input[type=file] { width: 100%; padding: 9px; }
+    .full { grid-column: 1 / -1; }
+    .status { min-height: 22px; color: var(--muted); font-size: .9rem; }
+    .status.error { color: var(--danger); }
+    .hidden { display: none !important; }
+    .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+    .metric { background: var(--panel-soft); border-radius: 12px; padding: 12px; }
+    .metric-head { display: flex; justify-content: space-between; gap: 10px; font-size: .85rem; margin-bottom: 8px; }
+    .track { height: 7px; border-radius: 10px; background: #34394b; overflow: hidden; }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--accent)); border-radius: inherit; }
+    .score { font-size: 2.8rem; font-weight: 800; letter-spacing: -.07em; color: var(--accent); }
+    .score-caption { color: var(--muted); font-size: .84rem; }
+    .verdict { display: inline-flex; margin: 10px 0 4px; padding: 6px 9px; border-radius: 99px; color: var(--accent); background: #2b3820; font-size: .78rem; font-weight: 750; }
+    .cards { display: grid; gap: 10px; margin-top: 14px; }
+    .card { border: 1px solid var(--line); border-left: 3px solid var(--purple); border-radius: 11px; background: var(--panel-soft); padding: 13px 15px; }
+    .card.urgent { border-left-color: var(--danger); }
+    .card.opportunity { border-left-color: var(--accent); }
+    .card h3 { font-size: .92rem; margin-bottom: 5px; }
+    .card p { font-size: .86rem; color: var(--muted); line-height: 1.5; margin-bottom: 0; }
+    .card button { margin-top: 10px; }
+    .trajectory { display: flex; align-items: end; gap: 12px; min-height: 165px; padding: 18px 4px 0; }
+    .week { flex: 1; text-align: center; color: var(--muted); font-size: .75rem; }
+    .week-bar { min-height: 4px; border-radius: 7px 7px 2px 2px; background: linear-gradient(0deg, #8271dc, var(--accent)); margin-bottom: 7px; }
+    .section-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .bench-list { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip { font-size: .8rem; padding: 6px 9px; border-radius: 99px; color: var(--muted); background: var(--panel-soft); border: 1px solid var(--line); }
+    .song-list { display: grid; gap: 12px; }
+    .song-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 360px); align-items: center; gap: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-soft); padding: 14px; }
+    .song-card h3 { margin-bottom: 5px; font-size: .98rem; }
+    .song-card p { margin-bottom: 0; color: var(--muted); font-size: .84rem; }
+    .song-card audio { width: 100%; }
+    .event-list { display: grid; gap: 10px; }
+    .event-row { display: grid; grid-template-columns: minmax(180px, 1fr) auto; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-soft); padding: 13px 15px; }
+    .event-row button { justify-self: end; }
+    .event-row h3 { margin-bottom: 4px; font-size: .96rem; }
+    .event-row p { margin-bottom: 0; color: var(--muted); font-size: .84rem; }
+    .collaborator-row { display: grid; grid-template-columns: minmax(150px, 1fr) repeat(3, auto) auto; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel-soft); padding: 12px 14px; }
+    .collaborator-row h3 { margin-bottom: 4px; font-size: .92rem; }
+    .collaborator-row p { margin: 0; color: var(--muted); font-size: .82rem; }
+    .collaborator-stat { text-align: right; font-size: .82rem; color: var(--muted); }
+    .collaborator-stat strong { display: block; color: var(--text); font-size: 1rem; }
+    .sales-form { display: flex; gap: 7px; }
+    .sales-form input { width: 72px; padding: 8px; }
+    .sales-form button { padding: 8px 10px; }
+    footer { margin-top: 30px; text-align: center; color: var(--muted); font-size: .8rem; }
+    @media (max-width: 760px) {
+      header { align-items: flex-start; flex-direction: column; }
+      .account { flex-wrap: wrap; }
+      .layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 460px) {
+      .shell { padding: 20px 14px 42px; }
+      .row, .result-grid { grid-template-columns: 1fr; }
+      .song-card { grid-template-columns: 1fr; gap: 12px; }
+      .collaborator-row { grid-template-columns: 1fr; }
+      .collaborator-stat { text-align: left; }
+      .panel { padding: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">SD</div>
+        <div>
+          <h1>SoundDNA Studio</h1>
+          <p class="subtitle">CIMFEST 2026 · Cameroon music intelligence</p>
+        </div>
+      </div>
+      <form class="account" id="login-form">
+        <input aria-label="Cameroon phone" name="phone" placeholder="+237 phone" autocomplete="tel" required>
+        <input aria-label="4–6 digit PIN" name="pin" placeholder="PIN" inputmode="numeric" type="password" minlength="4" maxlength="6" required>
+        <button type="submit">Sign in</button>
+        <button class="secondary" id="logout" type="button">Sign out</button>
+      </form>
+    </header>
+
+    <p id="global-status" class="status" role="status">Sign in with your artist account to load your studio.</p>
+    <nav class="tabs" aria-label="Studio modules">
+      <button class="tab active" data-tab="analyzer">1. AI Viral DNA Analyzer</button>
+      <button class="tab" data-tab="advisor">2. Weekly AI Advisor</button>
+      <button class="tab" data-tab="songs">3. Song releases</button>
+      <button class="tab" data-tab="events">4. Ticket collaborators</button>
+    </nav>
+
+    <section id="analyzer" class="tab-content">
+      <div class="layout">
+        <article class="panel">
+          <h2>Load your proven hit</h2>
+          <p class="muted">Create a private DNA benchmark from a WAV or MP3 that has already found an audience.</p>
+          <form id="benchmark-form">
+            <label>Track title<input name="title" maxlength="200" required placeholder="e.g. Douala After Dark"></label>
+            <div class="row">
+              <label>Genre<input name="genre" maxlength="100" required placeholder="Makossa"></label>
+              <label>Broadcast stations<input name="broadcast_stations_count" type="number" min="0" value="0"></label>
+            </div>
+            <label>Reach notes<textarea name="viral_reach_notes" maxlength="5000" rows="2" placeholder="Stations, cities, milestones"></textarea></label>
+            <label>Viral hit audio<input name="audio_file" type="file" accept=".wav,.mp3,audio/wav,audio/mpeg" required></label>
+            <button class="primary" type="submit">Analyze & save benchmark</button>
+          </form>
+          <p class="status" id="benchmark-status" role="status"></p>
+          <div class="bench-list" id="benchmark-list"></div>
+        </article>
+
+        <article class="panel">
+          <h2>Compare a new studio demo</h2>
+          <p class="muted">Compare each revision to one of your saved viral benchmarks and get actionable studio fixes.</p>
+          <form id="compare-form">
+            <label>Viral benchmark<select name="benchmark_id" id="benchmark-select" required><option value="">Load a benchmark first</option></select></label>
+            <label>Demo title<input name="demo_title" maxlength="200" required placeholder="New single"></label>
+            <label>Demo audio<input name="audio_file" type="file" accept=".wav,.mp3,audio/wav,audio/mpeg" required></label>
+            <button class="primary" type="submit">Compare demo</button>
+          </form>
+          <p class="status" id="compare-status" role="status"></p>
+          <div id="comparison-result"></div>
+        </article>
+
+        <article class="panel full">
+          <div class="section-head"><div><h2>Studio versions</h2><p class="muted">Your saved benchmark tracks and versioned demo reports.</p></div><button class="secondary" id="refresh-studio" type="button">Refresh</button></div>
+          <div id="studio-history" class="cards"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="advisor" class="tab-content hidden">
+      <div class="layout">
+        <article class="panel">
+          <div class="section-head"><div><h2>Weekly momentum</h2><p class="muted">Canary Spider release telemetry</p></div><button class="secondary" id="refresh-advisor" type="button">Refresh</button></div>
+          <div id="momentum-status" class="verdict">Sign in to view</div>
+          <div id="trajectory" class="trajectory"></div>
+        </article>
+        <article class="panel">
+          <h2>Next-week action cards</h2>
+          <p class="muted" id="unread-count">Your prioritized advisor insights appear here.</p>
+          <div id="advisor-cards" class="cards"></div>
+        </article>
+        <article class="panel full">
+          <h2>Publish a release for monitoring</h2>
+          <form id="release-form" class="row">
+            <label>Release title<input name="title" maxlength="200" required placeholder="Next single"></label>
+            <label>Benchmark<select name="benchmark_id" id="release-benchmark" required><option value="">Load a benchmark first</option></select></label>
+            <button class="primary full" type="submit">Publish release</button>
+          </form>
+          <p class="status" id="release-status" role="status"></p>
+          <details>
+            <summary class="muted">Record a weekly telemetry snapshot</summary>
+            <form id="snapshot-form" class="row" style="margin-top:14px">
+              <label>Release ID<input name="release_id" type="number" min="1" required></label>
+              <label>Week number<input name="week_number" type="number" min="1" required></label>
+              <label>Weekly streams<input name="weekly_streams" type="number" min="0" required></label>
+              <label>Radio/TV spins<input name="radio_tv_spins" type="number" min="0" required></label>
+              <label>Early skip rate %<input name="early_skip_rate_pct" type="number" min="0" max="100" step="0.1" required></label>
+              <label>Social mentions<input name="social_mentions" type="number" min="0" required></label>
+              <label class="full">Top city<input name="top_city" maxlength="100" required placeholder="Douala"></label>
+              <button class="primary full" type="submit">Run Canary Spider analysis</button>
+            </form>
+            <p class="status" id="snapshot-status" role="status"></p>
+          </details>
+        </article>
+      </div>
+    </section>
+
+    <section id="songs" class="tab-content hidden">
+      <div class="layout">
+        <article class="panel">
+          <h2>Release a song</h2>
+          <p class="muted">Artists can upload an MP3 up to 30 MB. Once published, it is available to fans and the wider platform to stream.</p>
+          <p id="song-upload-hint" class="status">Sign in with an artist account to upload a song.</p>
+          <form id="song-upload-form" class="hidden">
+            <label>Song title<input name="title" maxlength="200" required placeholder="Your new single"></label>
+            <label>MP3 audio<input name="audio_file" type="file" accept=".mp3,audio/mpeg" required></label>
+            <button class="primary" type="submit">Upload and publish</button>
+          </form>
+          <p class="status" id="song-upload-status" role="status"></p>
+        </article>
+        <article class="panel">
+          <div class="section-head">
+            <div><h2>Recent songs</h2><p class="muted">Listen to the latest releases from artists on the platform.</p></div>
+            <button class="secondary" id="refresh-songs" type="button">Refresh</button>
+          </div>
+          <div id="recent-songs" class="song-list" aria-live="polite"></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="events" class="tab-content hidden">
+      <div class="layout">
+        <article class="panel">
+          <h2>Create an event</h2>
+          <p class="muted">Create a ticketed event, then allocate tickets to sellers and record sales.</p>
+          <form id="event-create-form" class="row">
+            <label class="full">Event title<input name="title" maxlength="200" required placeholder="CIMFEST showcase"></label>
+            <label>Event date<input name="event_date" type="datetime-local" required></label>
+            <label>Venue<input name="venue" maxlength="200" required placeholder="Douala Arena"></label>
+            <label>Ticket price (XAF)<input name="ticket_price" type="number" min="0.01" step="0.01" required></label>
+            <label>Total tickets<input name="total_tickets" type="number" min="1" required></label>
+            <button class="primary full" type="submit">Create event</button>
+          </form>
+          <p class="status" id="event-create-status" role="status"></p>
+        </article>
+
+        <article class="panel">
+          <div class="section-head">
+            <div><h2>Your events</h2><p class="muted">Select an event to manage its ticket sellers.</p></div>
+            <button class="secondary" id="refresh-events" type="button">Refresh</button>
+          </div>
+          <div id="event-list" class="event-list"></div>
+        </article>
+
+        <article class="panel full">
+          <div class="section-head">
+            <div><h2 id="collaborator-event-title">Ticket collaborators</h2><p class="muted" id="collaborator-event-summary">Select one of your events.</p></div>
+          </div>
+          <form id="collaborator-create-form" class="row hidden">
+            <label>Name<input name="name" maxlength="200" required placeholder="Ticket seller"></label>
+            <label>Email<input name="email" type="email" maxlength="254" placeholder="seller@example.com"></label>
+            <label>Phone<input name="phone" maxlength="32" placeholder="+237 690 000 000"></label>
+            <label>Commission %<input name="commission_percent" type="number" min="0" max="100" step="0.01" required></label>
+            <label>Tickets assigned<input name="tickets_assigned" type="number" min="1" required></label>
+            <button class="primary" type="submit">Assign collaborator</button>
+          </form>
+          <p class="status" id="collaborator-status" role="status"></p>
+          <div id="collaborator-list" class="cards"></div>
+        </article>
+      </div>
+    </section>
+    <footer>Built for artists, producers, DJs and broadcasters in Cameroon.</footer>
+  </main>
+  <script>
+    const tokenKey = "sounddna_access_token";
+    let benchmarks = [];
+    let currentUser = null;
+    let events = [];
+    let selectedEvent = null;
+    const $ = (selector) => document.querySelector(selector);
+    const setStatus = (element, text, isError = false) => {
+      element.textContent = text;
+      element.classList.toggle("error", isError);
+    };
+    function updateSongUploadAccess() {
+      const allowed = currentUser?.role === "artist";
+      $("#song-upload-form").classList.toggle("hidden", !allowed);
+      setStatus(
+        $("#song-upload-hint"),
+        allowed ? "Upload an MP3 release for fans and platform partners." : "Sign in with an artist account to upload a song.",
+      );
+    }
+    function renderSongs(items) {
+      const root = $("#recent-songs");
+      root.replaceChildren();
+      if (!items.length) {
+        const empty = document.createElement("p");
+        empty.className = "muted";
+        empty.textContent = "No songs have been released yet.";
+        root.append(empty);
+        return;
+      }
+      for (const item of items) {
+        const card = document.createElement("article");
+        card.className = "song-card";
+        const details = document.createElement("div");
+        const title = document.createElement("h3");
+        title.textContent = item.title;
+        const byline = document.createElement("p");
+        byline.textContent = `${item.artist_name} · ${new Date(item.created_at).toLocaleDateString()}`;
+        details.append(title, byline);
+        const player = document.createElement("audio");
+        player.controls = true;
+        player.preload = "none";
+        player.src = item.audio_url;
+        player.setAttribute("aria-label", `Play ${item.title} by ${item.artist_name}`);
+        card.append(details, player);
+        root.append(card);
+      }
+    }
+    async function loadRecentSongs() {
+      const data = await api("/songs/recent");
+      renderSongs(data.items);
+    }
+    async function api(url, options = {}) {
+      const headers = new Headers(options.headers || {});
+      const token = localStorage.getItem(tokenKey);
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      const response = await fetch(url, { ...options, headers });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body?.error?.message || body?.detail?.message || `Request failed (${response.status})`);
+      return body;
+    }
+    function showComparison(item) {
+      const root = $("#comparison-result");
+      root.replaceChildren();
+      const score = document.createElement("div");
+      score.className = "score";
+      score.textContent = `${item.scores.hit_readiness_score}%`;
+      root.append(score);
+      const caption = document.createElement("div");
+      caption.className = "score-caption";
+      caption.textContent = `Hit readiness · ${item.version}`;
+      root.append(caption);
+      const verdict = document.createElement("div");
+      verdict.className = "verdict";
+      verdict.textContent = item.verdict.replaceAll("_", " ");
+      root.append(verdict);
+      const metrics = document.createElement("div");
+      metrics.className = "result-grid";
+      const labels = { tone_match: "Tone match", flow_match: "Flow match", power_match: "Power match", hook_timing_match: "Hook timing" };
+      for (const [key, label] of Object.entries(labels)) {
+        const metric = document.createElement("div");
+        metric.className = "metric";
+        const head = document.createElement("div");
+        head.className = "metric-head";
+        const name = document.createElement("span");
+        name.textContent = label;
+        const value = document.createElement("strong");
+        value.textContent = `${item.scores[key]}%`;
+        head.append(name, value);
+        const track = document.createElement("div");
+        track.className = "track";
+        const fill = document.createElement("div");
+        fill.className = "fill";
+        fill.style.width = `${Math.max(0, Math.min(100, item.scores[key]))}%`;
+        track.append(fill);
+        metric.append(head, track);
+        metrics.append(metric);
+      }
+      root.append(metrics);
+      const cards = document.createElement("div");
+      cards.className = "cards";
+      for (const fix of item.studio_fixes) {
+        const card = document.createElement("article");
+        card.className = "card";
+        const title = document.createElement("h3");
+        title.textContent = fix.title;
+        const text = document.createElement("p");
+        text.textContent = fix.instruction;
+        card.append(title, text);
+        cards.append(card);
+      }
+      root.append(cards);
+    }
+    function renderBenchmarks() {
+      const selects = [$("#benchmark-select"), $("#release-benchmark")];
+      for (const select of selects) {
+        select.replaceChildren();
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = benchmarks.length ? "Choose a viral benchmark" : "Load a benchmark first";
+        select.append(placeholder);
+        for (const item of benchmarks) {
+          const option = document.createElement("option");
+          option.value = item.id;
+          option.textContent = `${item.title} · ${item.genre}`;
+          select.append(option);
+        }
+      }
+      const list = $("#benchmark-list");
+      list.replaceChildren();
+      for (const item of benchmarks) {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = `${item.title} · ${item.dna.musical_key} · ${item.dna.tempo_bpm} BPM`;
+        list.append(chip);
+      }
+    }
+    async function loadStudio() {
+      const data = await api("/analyzer/my-studio");
+      benchmarks = data.benchmarks;
+      renderBenchmarks();
+      const history = $("#studio-history");
+      history.replaceChildren();
+      for (const item of data.demos) {
+        const card = document.createElement("article");
+        card.className = "card";
+        const title = document.createElement("h3");
+        title.textContent = `${item.demo_title} ${item.version} · ${item.scores.hit_readiness_score}%`;
+        const detail = document.createElement("p");
+        detail.textContent = `${item.verdict.replaceAll("_", " ")} · ${new Date(item.created_at).toLocaleString()}`;
+        card.append(title, detail);
+        card.addEventListener("click", () => showComparison(item));
+        history.append(card);
+      }
+    }
+    async function loadAdvisor() {
+      const data = await api("/advisor/dashboard");
+      $("#momentum-status").textContent = data.weekly_momentum_status.replaceAll("_", " ").toUpperCase();
+      $("#unread-count").textContent = `${data.unread_alerts_count} unread action card${data.unread_alerts_count === 1 ? "" : "s"}`;
+      const chart = $("#trajectory");
+      chart.replaceChildren();
+      const max = Math.max(1, ...data.trajectory.map((item) => item.weekly_streams));
+      for (const point of data.trajectory) {
+        const column = document.createElement("div");
+        column.className = "week";
+        const bar = document.createElement("div");
+        bar.className = "week-bar";
+        bar.style.height = `${Math.max(5, 120 * point.weekly_streams / max)}px`;
+        bar.title = `${point.weekly_streams.toLocaleString()} streams`;
+        const value = document.createElement("div");
+        value.textContent = point.weekly_streams.toLocaleString();
+        const label = document.createElement("div");
+        label.textContent = `Week ${point.week_number}`;
+        column.append(bar, value, label);
+        chart.append(column);
+      }
+      const cards = $("#advisor-cards");
+      cards.replaceChildren();
+      for (const item of data.insights) {
+        const card = document.createElement("article");
+        card.className = `card ${item.priority}`;
+        const title = document.createElement("h3");
+        title.textContent = `${item.priority.toUpperCase()} · ${item.title}`;
+        const text = document.createElement("p");
+        text.textContent = item.recommendation;
+        card.append(title, text);
+        if (!item.acknowledged) {
+          const acknowledge = document.createElement("button");
+          acknowledge.className = "secondary";
+          acknowledge.type = "button";
+          acknowledge.textContent = "Mark as acknowledged";
+          acknowledge.addEventListener("click", async () => {
+            try {
+              await api(`/advisor/insights/${item.id}/acknowledge`, { method: "POST" });
+              await loadAdvisor();
+            } catch (error) {
+              setStatus($("#global-status"), error.message, true);
+            }
+          });
+          card.append(acknowledge);
+        }
+        cards.append(card);
+      }
+    }
+    document.querySelectorAll(".tab").forEach((button) => button.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab === button));
+      document.querySelectorAll(".tab-content").forEach((section) => section.classList.toggle("hidden", section.id !== button.dataset.tab));
+    }));
+    $("#login-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      try {
+        const data = await api("/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: form.get("phone"), pin: form.get("pin") }) });
+        localStorage.setItem(tokenKey, data.access_token);
+        currentUser = data.user;
+        updateSongUploadAccess();
+        setStatus($("#global-status"), `Signed in as ${data.user.name}.`);
+        await Promise.all([loadStudio(), loadAdvisor(), loadRecentSongs()]);
+      } catch (error) {
+        setStatus($("#global-status"), error.message, true);
+      }
+    });
+    $("#logout").addEventListener("click", () => {
+      localStorage.removeItem(tokenKey);
+      benchmarks = [];
+      currentUser = null;
+      updateSongUploadAccess();
+      renderBenchmarks();
+      setStatus($("#global-status"), "Signed out.");
+    });
+    $("#benchmark-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setStatus($("#benchmark-status"), "Analyzing audio…");
+      try {
+        const data = await api("/analyzer/viral-benchmarks", { method: "POST", body: new FormData(event.currentTarget) });
+        setStatus($("#benchmark-status"), `Saved ${data.title}: ${data.dna.musical_key}, ${data.dna.tempo_bpm} BPM.`);
+        event.currentTarget.reset();
+        await loadStudio();
+      } catch (error) {
+        setStatus($("#benchmark-status"), error.message, true);
+      }
+    });
+    $("#compare-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setStatus($("#compare-status"), "Comparing studio DNA…");
+      try {
+        const item = await api("/analyzer/compare", { method: "POST", body: new FormData(event.currentTarget) });
+        setStatus($("#compare-status"), "Comparison complete.");
+        showComparison(item);
+        await loadStudio();
+      } catch (error) {
+        setStatus($("#compare-status"), error.message, true);
+      }
+    });
+    $("#release-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      try {
+        const data = await api("/releases", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: new FormData(event.currentTarget).get("title"), benchmark_id: Number(new FormData(event.currentTarget).get("benchmark_id")) }) });
+        setStatus($("#release-status"), `Release published with ID ${data.id}.`);
+        event.currentTarget.reset();
+      } catch (error) {
+        setStatus($("#release-status"), error.message, true);
+      }
+    });
+    $("#song-upload-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setStatus($("#song-upload-status"), "Uploading MP3…");
+      try {
+        const data = await api("/songs", { method: "POST", body: new FormData(event.currentTarget) });
+        setStatus($("#song-upload-status"), `Published “${data.title}”.`);
+        event.currentTarget.reset();
+        await loadRecentSongs();
+      } catch (error) {
+        setStatus($("#song-upload-status"), error.message, true);
+      }
+    });
+    $("#snapshot-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const id = form.get("release_id");
+      const payload = Object.fromEntries(form.entries());
+      delete payload.release_id;
+      for (const key of ["week_number", "weekly_streams", "radio_tv_spins", "social_mentions"]) payload[key] = Number(payload[key]);
+      payload.early_skip_rate_pct = Number(payload.early_skip_rate_pct);
+      try {
+        await api(`/canary/crawl/${id}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        setStatus($("#snapshot-status"), "Canary Spider snapshot recorded and advisor cards evaluated.");
+        await loadAdvisor();
+      } catch (error) {
+        setStatus($("#snapshot-status"), error.message, true);
+      }
+    });
+    $("#refresh-studio").addEventListener("click", () => loadStudio().catch((error) => setStatus($("#global-status"), error.message, true)));
+    $("#refresh-advisor").addEventListener("click", () => loadAdvisor().catch((error) => setStatus($("#global-status"), error.message, true)));
+    $("#refresh-songs").addEventListener("click", () => loadRecentSongs().catch((error) => setStatus($("#global-status"), error.message, true)));
+    updateSongUploadAccess();
+    loadRecentSongs().catch((error) => setStatus($("#global-status"), error.message, true));
+    if (localStorage.getItem(tokenKey)) {
+      api("/me")
+        .then((user) => {
+          currentUser = user;
+          updateSongUploadAccess();
+          return Promise.all([loadStudio(), loadAdvisor()]);
+        })
+        .then(() => setStatus($("#global-status"), "Studio and advisor data loaded."))
+        .catch((error) => setStatus($("#global-status"), error.message, true));
+    }
+  </script>
+</body>
+</html>

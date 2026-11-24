@@ -38,7 +38,9 @@ def put_profile(payload: ProfileIn, db: Session = Depends(get_db), user: User = 
         error("profile_forbidden", "This role cannot create a public profile", 403)
 
     details = {key: data[key] for key in _ROLE_FIELDS[user.role] if key in data}
-    profile = user.profile or Profile(user_id=user.id)
+    profile = db.query(Profile).filter(Profile.user_id == user.id).first()
+    if profile is None:
+        profile = Profile(user_id=user.id)
     profile.display_name = payload.display_name
     profile.bio = payload.bio
     profile.genres = payload.genres
@@ -53,10 +55,13 @@ def put_profile(payload: ProfileIn, db: Session = Depends(get_db), user: User = 
 @router.get("/profiles/{user_id}")
 def get_profile(user_id: int, db: Session = Depends(get_db), viewer: User | None = Depends(get_optional_user)):
     user = db.get(User, user_id)
-    if not user or not user.profile:
+    if not user:
+        error("not_found", "Profile not found", 404)
+    profile = db.query(Profile).filter(Profile.user_id == user.id).first()
+    if profile is None:
         error("not_found", "Profile not found", 404)
     include_phone = viewer is not None and (viewer.id == user.id or viewer.role == "admin")
-    return profile_view(user.profile, user, include_phone)
+    return profile_view(profile, user, include_phone)
 
 
 def profile_view(profile: Profile, user: User, include_phone: bool):

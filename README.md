@@ -1,22 +1,56 @@
-# Bantu Music 2.0 — Module 1
+# TeamBright — SoundDNA Studio
 
-Accounts, profiles, manual verification, directory discovery, and artist follows for the CIMFEST Hackathon 2026 Cameroon demo. Module 1 is implemented in `Backend/`; later modules are intentionally out of scope.
+Accounts, profiles, music discovery, SoundDNA audio analysis, Canary Spider release monitoring, and career insights for the CIMFEST 2026 Cameroon demo.
 
 ## Requirements and setup
 
 - Python 3.11 or newer
 - SQLite by default; SQLAlchemy supports changing `DATABASE_URL` to PostgreSQL
 
+### Quick start
+
+Run these commands from the repository root in PowerShell:
+
 ```powershell
 cd Backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python -m scripts.seed
-python -m uvicorn app.main:app --reload
+$python = "C:/Users/BHGJJ/AppData/Local/Programs/Python/Python313/python.exe"
+& $python -m pip install -r requirements.txt
+$env:NUMBA_DISABLE_JIT = "1"
+& $python seed_demo.py
+& $python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-The API is available at `http://127.0.0.1:8000`; OpenAPI docs are at `/docs`.
+The studio UI and API are available at `http://127.0.0.1:8000`; interactive OpenAPI docs are at `http://127.0.0.1:8000/docs`. The UI is served by the backend; the separate `Frontend/` directory is a Vite starter.
+
+`NUMBA_DISABLE_JIT=1` avoids a Librosa/Numba crash that can occur while running audio analysis on Python 3.13 under Windows.
+
+To create a general demo account set instead of the SoundDNA/Canary demo data:
+
+```powershell
+cd Backend
+& $python -m scripts.seed
+& $python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Stop the server with `Ctrl+C`.
+
+### Tests
+
+Run the complete backend suite from `Backend/`:
+
+```powershell
+$env:NUMBA_DISABLE_JIT = "1"
+& $python -m pytest -q
+```
+
+Run only the Canary Spider tests:
+
+```powershell
+$env:NUMBA_DISABLE_JIT = "1"
+& $python -m pytest tests/test_canary.py -q
+```
+
+To load the SoundDNA and Canary-specific demo account, benchmark, example demo versions, release, and weekly snapshots, run `python seed_demo.py` from `Backend/` instead of `python -m scripts.seed`. The demo login is `+237699556677` with PIN `5555`; generated WAV fixtures are in `Backend/demo_audio/`. Both seeders are safe to rerun for their own records. The general account seeder uses `DEMO_PIN` (default `1234`).
 
 ### Environment variables
 
@@ -24,7 +58,7 @@ Set these in the environment or in `Backend/.env`:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `DATABASE_URL` | `sqlite:///./bantu.db` | SQLAlchemy connection string |
+| `DATABASE_URL` | `sqlite:///./sounddna.db` | SQLAlchemy connection string |
 | `JWT_SECRET` | development-only value | Signing secret; set a strong private value outside local development |
 | `JWT_ALGORITHM` | `HS256` | JWT signing algorithm |
 | `ACCESS_TOKEN_MINUTES` | `60` | Bearer token lifetime |
@@ -35,9 +69,9 @@ Use `python -m scripts.create_admin --name "Admin" --phone "690123456" --city "Y
 
 ## Authentication and errors
 
-Cameroon mobile numbers are stored as `+237` plus the 9-digit number beginning with `6`. PINs are salted PBKDF2 hashes. Login tokens are signed JWTs. After five failed PIN attempts, login is blocked for 15 minutes. PIN login is demo-grade; there is no SMS OTP or recovery flow.
+Cameroon mobile numbers are stored as `+237` plus the 9-digit number beginning with `6`. Registration and login accept the local number (for example, `690123456`) or an international `237`, `+237`, or `00237` prefix, with optional spaces or hyphens. PINs are salted PBKDF2 hashes. Login tokens are signed JWTs. After five failed PIN attempts, login is blocked for 15 minutes. PIN login is demo-grade; there is no SMS OTP or recovery flow.
 
-All API errors use `{"error":{"code":"...","message":"...","details":{...}}}`. Validation errors include field locations. Request bodies larger than 1 MiB are rejected.
+All API errors use `{"error":{"code":"...","message":"...","details":{...}}}`. Validation errors include field locations. Request bodies larger than 1 MiB are rejected, except audio uploads (30 MiB maximum, plus multipart overhead).
 
 ## Endpoints
 
@@ -60,8 +94,85 @@ All API errors use `{"error":{"code":"...","message":"...","details":{...}}}`. V
 | `DELETE` | `/follows/{artist_id}` | Authenticated | Unfollow an artist |
 | `GET` | `/me/following` | Authenticated | List followed artists |
 | `GET` | `/artists/{id}/followers` | Public | Read follower count only |
+| `POST` | `/songs` | Artist | Upload and publish an MP3 song (30 MiB maximum) |
+| `GET` | `/songs/recent` | Public | List the latest active songs for fan and platform discovery |
+| `GET` | `/songs/{song_id}/audio` | Public | Stream a published song |
+| `GET` | `/songs/mine` | Authenticated | List the signed-in artist's published songs |
+| `POST` | `/analyzer/viral-benchmarks` | Artist | Analyze and save an audience-proven viral benchmark |
+| `POST` | `/analyzer/compare` | Artist | Compare a studio demo with an owned benchmark and save a version |
+| `GET` | `/analyzer/my-studio` | Artist | List the signed-in artist's benchmarks and demo versions |
+| `POST` | `/releases` | Artist | Publish a track release against an owned benchmark |
+| `POST` | `/releases/{release_id}/airplay` | Verified broadcaster/DJ | Log official radio or TV airplay |
+| `POST` | `/canary/crawl/{release_id}` | Artist | Submit a weekly Canary momentum snapshot |
+| `GET` | `/advisor/dashboard` | Artist | Read trajectory, momentum status, and advisor insights |
+| `POST` | `/advisor/insights/{insight_id}/acknowledge` | Artist | Acknowledge an owned advisor insight |
+| `POST` | `/events` | Authenticated | Create a ticketed event |
+| `GET` | `/events` | Authenticated | List the signed-in user's events |
+| `POST` | `/events/{event_id}/collaborators` | Event owner | Assign a ticket seller and commission |
+| `GET` | `/events/{event_id}/collaborators` | Event owner | List collaborators and ticket balances |
+| `POST` | `/events/{event_id}/collaborators/{collaborator_id}/sales` | Event owner | Record tickets sold against an assignment |
 
 `/directory` accepts `role`, `city`, `genre`, `verified`, `q`, `limit` (1–50), and `offset`. Directory results include only active users with public artist, DJ, broadcaster, or promoter profiles.
+
+Song uploads are stored as MP3 files in `Backend/uploads/songs`; the public song listing exposes audio URLs for in-browser playback.
+
+## Event ticket collaborators
+
+Create an event with `POST /events` using `title`, ISO-formatted `event_date`, `venue`, `ticket_price`, and `total_tickets`. Add collaborators through `POST /events/{event_id}/collaborators` with a `name`, exactly one contact field (`email` or `phone`), `commission_percent`, and `tickets_assigned`. Commission is calculated per ticket from the event's ticket price. Total assignments cannot exceed the event capacity.
+
+The event owner records sales with `POST /events/{event_id}/collaborators/{collaborator_id}/sales` and `{"quantity": 3}`. The API tracks tickets sold and remaining, and rejects sales above the collaborator's allocation. Events and collaborator records are private to the user who created the event. Collaborators are stored as contact records; this feature does not create user accounts or send invitations.
+
+## SoundDNA Analyzer and Canary Spider
+
+The Analyzer accepts WAV or MP3 files up to 30 MiB and 10 minutes long. It extracts musical features and compares a new demo with a benchmark owned by the signed-in artist. Analysis results and version numbers are saved; uploaded Analyzer audio is not retained. The comparison returns a readiness score, verdict, per-dimension scores, and suggested studio fixes. The scoring and Canary recommendations are deterministic signal/rule-based analysis, not a hosted generative-AI service.
+
+The Analyzer workflow is:
+
+1. Sign in as an artist and create a benchmark with `POST /analyzer/viral-benchmarks` (multipart fields: `title`, `genre`, optional `broadcast_stations_count` and `viral_reach_notes`, and `audio_file`).
+2. Compare a studio demo with `POST /analyzer/compare` (multipart fields: owned `benchmark_id`, `demo_title`, and `audio_file`). Reusing a demo title creates the next version.
+3. Read saved benchmarks and demo versions from `GET /analyzer/my-studio`.
+
+The Canary workflow is:
+
+1. Publish a track using `POST /releases` with a title and an owned `benchmark_id`.
+2. Submit each week's manually collected stream, airplay, skip-rate, social-mention, and top-city data to `POST /canary/crawl/{release_id}`. A release can have only one snapshot per week.
+3. Review momentum, trajectory, and generated insights in `GET /advisor/dashboard`; acknowledge an insight with `POST /advisor/insights/{insight_id}/acknowledge`.
+4. Verified broadcasters and DJs can record official spins using `POST /releases/{release_id}/airplay`. An airplay log triggers advisor evaluation in a background task.
+
+Advisor rules currently flag a stream decline of at least 25% week over week, an early skip rate above 35%, and a regional surge at 10 city spins or 100 social mentions. When none apply, the system creates a follow-up-window recommendation. Insights are created once per category for each weekly snapshot. Snapshot submission and weekly stream/social figures are manual inputs; this demo does not connect to streaming or social platform APIs.
+
+### Try the seeded Analyzer and Advisor
+
+After running `python seed_demo.py` and starting the backend, open `http://127.0.0.1:8000` and sign in as the demo artist. The Analyzer tab shows the seeded benchmark and two comparison versions. For an additional comparison, use `Backend/demo_audio/follow_up_demo_v1_weak.wav` or `Backend/demo_audio/follow_up_demo_v2_fixed.wav`. In the Advisor tab, publish a release or inspect the seeded Canary trajectory and insights.
+
+The same flow can be exercised through the API. These PowerShell examples assume the seeded demo database and use the seeded artist's benchmark:
+
+```powershell
+$base = "http://127.0.0.1:8000"
+$artist = (Invoke-RestMethod "$base/auth/login" -Method Post -ContentType "application/json" -Body '{"phone":"+237699556677","pin":"5555"}').access_token
+$headers = @{ Authorization = "Bearer $artist" }
+$studio = Invoke-RestMethod "$base/analyzer/my-studio" -Headers $headers
+$benchmarkId = $studio.benchmarks[0].id
+
+$release = Invoke-RestMethod "$base/releases" -Method Post -Headers $headers -ContentType "application/json" -Body (@{
+    title = "Canary API demo"
+    benchmark_id = $benchmarkId
+} | ConvertTo-Json)
+$releaseId = $release.id
+
+Invoke-RestMethod "$base/canary/crawl/$releaseId" -Method Post -Headers $headers -ContentType "application/json" -Body (@{
+    week_number = 1
+    weekly_streams = 120000
+    radio_tv_spins = 18
+    early_skip_rate_pct = 19
+    social_mentions = 70
+    top_city = "Douala"
+} | ConvertTo-Json)
+
+Invoke-RestMethod "$base/advisor/dashboard" -Headers $headers
+```
+
+For multipart Analyzer uploads, use the browser UI or `curl.exe -F`; see `/docs` for the request schema and error responses.
 
 ## Scenario with curl
 

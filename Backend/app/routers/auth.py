@@ -13,6 +13,7 @@ from app.security import hash_pin, verify_pin, create_token
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", status_code=201)
+@router.post("/signup", status_code=201)
 def register(payload: RegisterIn, db: Session = Depends(get_db)):
     if db.scalar(select(User).where(User.phone == payload.phone)):
         error("phone_exists", "A user with this phone already exists", 409)

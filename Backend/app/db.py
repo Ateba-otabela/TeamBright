@@ -1,24 +1,12 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session
+from sqlmodel import Session, SQLModel
+from sqlalchemy.orm import sessionmaker
 
-from app.config import get_settings
-
-
-settings = get_settings()
-engine = create_engine(
-    settings.database_url,
-    connect_args={"check_same_thread": False} if settings.database_url.startswith("sqlite") else {},
-)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
+from app.database import engine, get_session
 
 
-class Base(DeclarativeBase):
-    pass
+Base = SQLModel
+SessionLocal = sessionmaker(bind=engine, class_=Session, expire_on_commit=False)
 
 
 def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    yield from get_session()

@@ -35,7 +35,7 @@ def directory(role: str | None = None, city: str | None = None, genre: str | Non
     count_statement = select(func.count()).select_from(statement.subquery())
     total = db.scalar(count_statement) or 0
     statement = statement.order_by(User.id).limit(limit).offset(offset)
-    rows = db.execute(statement).all()
+    rows = db.exec(statement).all()
     items = [{"id": user.id, "display_name": profile.display_name, "role": user.role,
               "city": user.city, "verified": user.verified, "bio": profile.bio,
               "genres": profile.genres, "photo_url": profile.photo_url,

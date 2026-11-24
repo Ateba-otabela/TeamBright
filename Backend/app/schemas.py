@@ -1,22 +1,9 @@
-import re
 from typing import Literal
 from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, TypeAdapter, field_validator
+from app.security import normalize_phone
 
 
 ALLOWED_ROLES = {"artist", "dj", "broadcaster", "promoter", "fan", "collaborator"}
-
-
-def normalize_phone(value: str) -> str:
-    compact = re.sub(r"[\s\-]", "", value)
-    if compact.startswith("+"):
-        compact = compact[1:]
-    if compact.startswith("00237"):
-        compact = compact[4:]
-    elif compact.startswith("237"):
-        compact = compact[3:]
-    if re.fullmatch(r"6\d{8}", compact):
-        return "+237" + compact
-    raise ValueError("invalid Cameroon mobile number")
 
 
 class RegisterIn(BaseModel):
@@ -35,7 +22,7 @@ class RegisterIn(BaseModel):
     @field_validator("pin")
     @classmethod
     def pin_valid(cls, value):
-        if not re.fullmatch(r"\d{4,6}", value):
+        if not value.isascii() or not value.isdigit() or not 4 <= len(value) <= 6:
             raise ValueError("PIN must contain 4 to 6 digits")
         return value
 
@@ -52,7 +39,7 @@ class LoginIn(BaseModel):
     @field_validator("pin")
     @classmethod
     def pin_valid(cls, value):
-        if not re.fullmatch(r"\d{4,6}", value):
+        if not value.isascii() or not value.isdigit() or not 4 <= len(value) <= 6:
             raise ValueError("PIN must contain 4 to 6 digits")
         return value
 
@@ -70,7 +57,7 @@ class ChangePinIn(BaseModel):
     @field_validator("new_pin")
     @classmethod
     def pin_valid(cls, value):
-        if not re.fullmatch(r"\d{4,6}", value):
+        if not value.isascii() or not value.isdigit() or not 4 <= len(value) <= 6:
             raise ValueError("PIN must contain 4 to 6 digits")
         return value
 

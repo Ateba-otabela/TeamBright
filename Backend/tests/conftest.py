@@ -5,8 +5,10 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+from sqlmodel import Session
 
 from app.db import Base, get_db
+from app.database import engine as default_engine, get_session
 from app.main import app
 
 
@@ -29,7 +31,9 @@ def test_db():
         poolclass=StaticPool,
     )
     Base.metadata.create_all(bind=engine)
-    test_sessions = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+    test_sessions = sessionmaker(
+        bind=engine, class_=Session, autoflush=False, expire_on_commit=False
+    )
 
     def override_get_db():
         db = test_sessions()
@@ -39,8 +43,11 @@ def test_db():
             db.close()
 
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_session] = override_get_db
+    app.state.database_engine = engine
     yield test_sessions
     app.dependency_overrides.clear()
+    app.state.database_engine = default_engine
     engine.dispose()
 
 

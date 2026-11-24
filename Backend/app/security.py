@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import hmac
+import re
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Callable
@@ -8,6 +9,19 @@ from typing import Callable
 import jwt
 
 from app.config import get_settings
+
+
+def normalize_phone(value: str) -> str:
+    compact = re.sub(r"[\s\-()]", "", value)
+    if compact.startswith("+"):
+        compact = compact[1:]
+    if compact.startswith("00237"):
+        compact = compact[5:]
+    elif compact.startswith("237"):
+        compact = compact[3:]
+    if re.fullmatch(r"[26]\d{8}", compact):
+        return "+237" + compact
+    raise ValueError("invalid Cameroon phone number")
 
 
 class SystemClock:
