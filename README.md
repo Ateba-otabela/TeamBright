@@ -1,6 +1,6 @@
-# TeamBright — CamerHitz
+# TeamBright — CamerHits
 
-**CamerHitz** is a music-industry platform created by TeamBright for the CIMFEST 2026 demo in Cameroon. It helps artists and music professionals manage releases, understand song performance, connect with industry partners, and coordinate events from one studio experience.
+**CamerHits** is a music-industry platform created by TeamBright for the CIMFEST 2026 demo in Cameroon. It helps artists and music professionals manage releases, understand song performance, connect with industry partners, and coordinate events from one studio experience.
 
 ## Project Links
 
