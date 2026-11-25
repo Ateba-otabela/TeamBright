@@ -23,7 +23,7 @@ export default function NavigationDrawer({ open, onClose }) {
     <aside id="navigation-drawer" className={`navigation-drawer${open ? ' open' : ''}`} aria-label="Navigation drawer">
       <div>
         <div className="drawer-brand">
-          <NavLink className="brand" to="/" onClick={onClose}><span className="brand-mark">C</span><span><strong>CamerHits</strong><small>Direct Studio</small></span></NavLink>
+          <NavLink className="brand" to="/" onClick={onClose}><img className="brand-mark" src="/icons/camerhits-mark.svg" alt="" /><span><strong>CamerHits</strong><small>Direct Studio</small></span></NavLink>
           <button className="icon-button close-button" type="button" onClick={onClose} aria-label="Close navigation">close</button>
         </div>
         <div className="profile-card"><div className="profile-avatar">{initials}</div><div><strong>{user?.name}{user?.verified && <span> ✓</span>}</strong><small>{user?.role}{user?.city ? ` · ${user.city}` : ''}</small></div></div>

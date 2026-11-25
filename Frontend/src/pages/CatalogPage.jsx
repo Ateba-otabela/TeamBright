@@ -4,11 +4,16 @@ import DashboardModal from '../components/DashboardModal'
 import { useDashboard } from '../dashboardContext'
 
 const initialSongs = [
-  { id: 'bamenda-sunrise', title: 'Bamenda Sunrise', status: 'draft', date: 'Nov 22, 2026', meta: 'Afropop / Makossa • 118 BPM • 3:06 • Pidgin / FR • Chorus 16s', genre: 'Afropop / Makossa', language: 'Pidgin / FR', bpm: '118', duration: '3:06', chorus: '16', price: '500', sales: 'Pre-release', score: '--', action: 'Finish & Publish', actionTo: '/catalog-vault', cover: '/covers/bamenda-sunrise.jpg' },
-  { id: 'midnight-rain', title: 'Midnight Rain', status: 'live', date: 'Nov 08, 2026', flag: 'SLOW_HOOK', meta: 'Afro-Soul • 96 BPM • 3:48 • EN / FR • Chorus 44s', genre: 'Afro-Soul', language: 'EN / FR', bpm: '96', duration: '3:48', chorus: '44', price: '1,000', sales: '122 sales • 171 spins', score: '41.2', action: 'Inspect AI', actionTo: '/ai-advisor', cover: '/covers/midnight-rain.jpg' },
-  { id: 'buea-town-vibe', title: 'Buea Town Vibe', status: 'live', date: 'Oct 19, 2026', meta: 'Afropop • 114 BPM • 3:12 • Pidgin / EN • Chorus 18s', genre: 'Afropop', language: 'Pidgin / EN', bpm: '114', duration: '3:12', chorus: '18', price: '500', sales: '218 sales • 450 spins', score: '86.4', action: 'View Splits', actionTo: '/split-contracts', cover: '/covers/buea-town-vibe.jpg' },
-  { id: 'douala-dusk', title: 'Douala Dusk', status: 'live', date: 'Sep 28, 2026', meta: 'Bikutsi Fusion • 122 BPM • 2:54 • FR / Ewondo • Chorus 19s', genre: 'Bikutsi Fusion', language: 'FR / Ewondo', bpm: '122', duration: '2:54', chorus: '19', price: '500', sales: '164 sales • 310 spins', score: '78.9', action: 'View Splits', actionTo: '/split-contracts', cover: '/covers/douala-dusk.jpg' },
-  { id: 'limbe-breeze', title: 'Limbe Breeze (Acoustic)', status: 'draft', date: 'Sep 11, 2026', meta: 'Afro-Acoustic • 88 BPM • 3:30 • EN • Chorus 21s', genre: 'Afro-Acoustic', language: 'EN', bpm: '88', duration: '3:30', chorus: '21', price: '500', sales: 'Pre-release', score: '--', action: 'Edit Draft', actionTo: '/catalog-vault', cover: '/covers/limbe-breeze.jpg' },
+  { id: 'bamenda-sunrise', title: 'Go Na GO', status: 'draft', date: 'Nov 22, 2026', meta: 'Afropop / Makossa • 118 BPM • 3:06 • Pidgin / FR • Chorus 16s', genre: 'Afropop / Makossa', language: 'Pidgin / FR', bpm: '118', duration: '3:06', chorus: '16', price: '500', sales: 'Pre-release', score: '--', action: 'Finish & Publish', actionTo: '/catalog-vault', cover: '/covers/artist/go-na-go.jpeg' },
+  { id: 'midnight-rain', title: 'Deux oeufs spaghetti', status: 'live', date: 'Nov 08, 2026', meta: 'Afro-Soul • 96 BPM • 3:48 • EN / FR • Chorus 44s', genre: 'Afro-Soul', language: 'EN / FR', bpm: '96', duration: '3:48', chorus: '44', price: '1,000', sales: '122 sales • 171 spins', score: '41.2', action: 'Inspect AI', actionTo: '/ai-advisor', cover: '/covers/artist/deux-oeufs-spaghetti.jpeg' },
+  { id: 'buea-town-vibe', title: "Bollo c'est bollo", status: 'live', date: 'Oct 19, 2026', meta: 'Afropop • 114 BPM • 3:12 • Pidgin / EN • Chorus 18s', genre: 'Afropop', language: 'Pidgin / EN', bpm: '114', duration: '3:12', chorus: '18', price: '500', sales: '218 sales • 450 spins', score: '86.4', action: 'View Splits', actionTo: '/split-contracts', cover: '/covers/artist/bollo-c-est-bollo.jpeg' },
+  { id: 'douala-dusk', title: 'sango', status: 'live', date: 'Sep 28, 2026', meta: 'Bikutsi Fusion • 122 BPM • 2:54 • FR / Ewondo • Chorus 19s', genre: 'Bikutsi Fusion', language: 'FR / Ewondo', bpm: '122', duration: '2:54', chorus: '19', price: '500', sales: '164 sales • 310 spins', score: '78.9', action: 'View Splits', actionTo: '/split-contracts', cover: '/covers/artist/sango.jpeg' },
+  { id: 'limbe-breeze', title: 'Balance', status: 'draft', date: 'Sep 11, 2026', meta: 'Afro-Acoustic • 88 BPM • 3:30 • EN • Chorus 21s', genre: 'Afro-Acoustic', language: 'EN', bpm: '88', duration: '3:30', chorus: '21', price: '500', sales: 'Pre-release', score: '--', action: 'Edit Draft', actionTo: '/catalog-vault', cover: '/covers/artist/balance.jpeg' },
+  { id: 'credit-alert', title: 'Credit Alert', status: 'draft', date: 'Details pending', meta: 'Track details not added yet', genre: '', language: '', bpm: '', duration: '', chorus: '', price: 'Not set', sales: 'Pre-release', score: '--', action: 'Edit Draft', actionTo: '/catalog-vault', cover: '/covers/artist/credit-alert.jpg' },
+  { id: 'jigi', title: 'Jigi', status: 'draft', date: 'Details pending', meta: 'Track details not added yet', genre: '', language: '', bpm: '', duration: '', chorus: '', price: 'Not set', sales: 'Pre-release', score: '--', action: 'Edit Draft', actionTo: '/catalog-vault', cover: '/covers/artist/jigi.jpeg' },
+  { id: 'amen', title: 'Amen', status: 'draft', date: 'Details pending', meta: 'Track details not added yet', genre: '', language: '', bpm: '', duration: '', chorus: '', price: 'Not set', sales: 'Pre-release', score: '--', action: 'Edit Draft', actionTo: '/catalog-vault', cover: '/covers/artist/amen.jpg' },
+  { id: 'amigo', title: 'Amigo', status: 'draft', date: 'Details pending', meta: 'Track details not added yet', genre: '', language: '', bpm: '', duration: '', chorus: '', price: 'Not set', sales: 'Pre-release', score: '--', action: 'Edit Draft', actionTo: '/catalog-vault', cover: '/covers/artist/amigo.jpeg' },
+  { id: 'stranger', title: 'Stranger', status: 'draft', date: 'Details pending', meta: 'Track details not added yet', genre: '', language: '', bpm: '', duration: '', chorus: '', price: 'Not set', sales: 'Pre-release', score: '--', action: 'Edit Draft', actionTo: '/catalog-vault', cover: '/covers/artist/stranger.jpeg' },
 ]
 
 const emptyDraft = { title: '', genre: '', language: '', bpm: '', duration: '', chorus: '16', price: '500', audioName: '', coverData: '' }
@@ -54,7 +59,18 @@ export default function CatalogPage() {
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [songs, setSongs] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('camerhits-catalog-songs')) || initialSongs } catch { return initialSongs }
+    try {
+      const saved = JSON.parse(localStorage.getItem('camerhits-catalog-songs'))
+      if (!Array.isArray(saved)) return initialSongs
+      const savedById = new Map(saved.map((song) => [song.id, song]))
+      const mergedSeeds = initialSongs.map((seed) => {
+        const stored = savedById.get(seed.id)
+        if (!stored) return seed
+        savedById.delete(seed.id)
+        return { ...seed, ...stored, title: seed.title, cover: seed.cover, status: stored.status || seed.status }
+      })
+      return [...mergedSeeds, ...saved.filter((song) => savedById.has(song.id))]
+    } catch { return initialSongs }
   })
   const [modal, setModal] = useState(null)
   const [editingId, setEditingId] = useState(null)
@@ -114,17 +130,10 @@ export default function CatalogPage() {
     setModal(null)
   }
 
-  const confirmPublish = () => {
-    if (!publishTarget) return
-    setSongs((items) => items.map((item) => item.id === publishTarget.id ? { ...item, status: 'live', sales: '0 sales • 0 spins', score: '--', action: 'View Splits', actionTo: '/split-contracts', flag: undefined } : item))
-    setModal(null)
-    setPublishTarget(null)
-  }
-
   return (
     <main className="catalog-page">
       <section className="catalog-title-row">
-        <div><h1>{fr ? 'Chansons & sorties directes' : 'Recent Songs & Direct Releases'}</h1><p>{fr ? 'Gérez les pistes, les distributions et les scores' : 'All 5 recent tracks by Kamga Beats — track Hit Scores, direct B2C XAF sales, and verified DJ spins.'}</p></div>
+        <div><h1>{fr ? 'Chansons & sorties directes' : 'Recent Songs & Direct Releases'}</h1><p>{fr ? `Gérez ${songs.length} morceaux, les distributions et les scores` : `All ${songs.length} recent tracks by KOCEE — track Hit Scores, direct B2C XAF sales, and verified DJ spins.`}</p></div>
         <button className="catalog-add-button" type="button" onClick={openAdd}><span className="material-icon">add</span><span>{fr ? 'Ajouter un morceau' : 'Add Song'}</span></button>
       </section>
 
@@ -140,7 +149,7 @@ export default function CatalogPage() {
         {visibleSongs.length === 0 && <div className="catalog-empty">{fr ? 'Aucun morceau ne correspond à votre recherche.' : 'No songs match your search.'}</div>}
       </section>
 
-      <DashboardModal open={modal === 'form'} title={editingId ? (fr ? 'Modifier le brouillon' : 'Edit Draft') : (fr ? 'Ajouter un morceau' : 'Add Song')} eyebrow={fr ? 'Démo locale — aucun serveur configuré' : 'Local demo — no server configured'} onClose={() => setModal(null)} size="wide">
+      <DashboardModal open={modal === 'form'} title={editingId ? (fr ? 'Modifier le brouillon' : 'Edit Draft') : (fr ? 'Ajouter un morceau' : 'Add Song')} eyebrow={fr ? 'Catalogue' : 'Catalog'} onClose={() => setModal(null)} size="wide">
         <form className="dashboard-form catalog-track-form" onSubmit={saveDraft}>
           <div className="form-grid">
             <label><span>{fr ? 'Titre' : 'Title'} *</span><input value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} required /></label>
@@ -163,8 +172,8 @@ export default function CatalogPage() {
         </form>
       </DashboardModal>
 
-      <DashboardModal open={modal === 'publish'} title={fr ? 'Réviser la publication démo' : 'Review Demo Publication'} eyebrow={fr ? 'Aucun service de publication réel configuré' : 'No real publishing service configured'} onClose={() => setModal(null)}>
-        {publishTarget && <div className="review-panel"><h3>{publishTarget.title}</h3><dl><div><dt>{fr ? 'Genre' : 'Genre'}</dt><dd>{publishTarget.genre}</dd></div><div><dt>{fr ? 'Langue' : 'Language'}</dt><dd>{publishTarget.language}</dd></div><div><dt>BPM</dt><dd>{publishTarget.bpm}</dd></div><div><dt>{fr ? 'Durée' : 'Duration'}</dt><dd>{publishTarget.duration}</dd></div><div><dt>{fr ? 'Refrain' : 'Chorus'}</dt><dd>{publishTarget.chorus}s</dd></div><div><dt>{fr ? 'Prix' : 'Price'}</dt><dd>{publishTarget.price} XAF</dd></div></dl><p>{fr ? 'Confirmation démo : aucun téléchargement ou publication en temps réel n’aura lieu.' : 'Demo confirmation: no real upload or live publication will occur.'}</p><div className="form-actions"><button className="secondary-button" type="button" onClick={() => setModal(null)}>{fr ? 'Annuler' : 'Cancel'}</button><button className="primary-button" type="button" onClick={confirmPublish}>{fr ? 'Publier en démo' : 'Publish in Demo'}</button></div></div>}
+      <DashboardModal open={modal === 'publish'} title={fr ? 'Réviser la publication' : 'Review Publication'} eyebrow={fr ? 'Service de publication indisponible' : 'Publishing service unavailable'} onClose={() => setModal(null)}>
+        {publishTarget && <div className="review-panel"><h3>{publishTarget.title}</h3><dl><div><dt>{fr ? 'Genre' : 'Genre'}</dt><dd>{publishTarget.genre}</dd></div><div><dt>{fr ? 'Langue' : 'Language'}</dt><dd>{publishTarget.language}</dd></div><div><dt>BPM</dt><dd>{publishTarget.bpm}</dd></div><div><dt>{fr ? 'Durée' : 'Duration'}</dt><dd>{publishTarget.duration}</dd></div><div><dt>{fr ? 'Refrain' : 'Chorus'}</dt><dd>{publishTarget.chorus}s</dd></div><div><dt>{fr ? 'Prix' : 'Price'}</dt><dd>{publishTarget.price} XAF</dd></div></dl><p>{fr ? 'Le service de publication n’est pas connecté. Le morceau restera en brouillon.' : 'The publishing service is not connected. This track will remain a draft.'}</p><div className="form-actions"><button className="secondary-button" type="button" onClick={() => setModal(null)}>{fr ? 'Fermer' : 'Close'}</button><button className="primary-button" type="button" disabled>{fr ? 'Publication indisponible' : 'Publishing Unavailable'}</button></div></div>}
       </DashboardModal>
     </main>
   )

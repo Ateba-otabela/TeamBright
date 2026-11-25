@@ -327,3 +327,31 @@ class AdvisorInsight(SQLModel, table=True):
     recommendation: str = Field(sa_type=Text)
     acknowledged: bool = Field(default=False, sa_type=Boolean, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
+
+
+class SplitContract(SQLModel, table=True):
+    __tablename__ = "split_contracts"
+
+    id: int | None = Field(default=None, primary_key=True)
+    public_id: str = Field(sa_type=String(36), unique=True, index=True)
+    owner_id: int = Field(foreign_key="users.id", index=True)
+    track_title: str = Field(sa_type=String(200))
+    status: str = Field(default="pending", sa_type=String(20), index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
+    updated_at: datetime = Field(default_factory=datetime.utcnow, sa_type=DateTime(timezone=True))
+
+
+class SplitContractParticipant(SQLModel, table=True):
+    __tablename__ = "split_contract_participants"
+    __table_args__ = (
+        UniqueConstraint("contract_id", "user_id", name="uq_split_contract_participant"),
+    )
+
+    id: int | None = Field(default=None, primary_key=True)
+    contract_id: int = Field(foreign_key="split_contracts.id", index=True)
+    user_id: int = Field(foreign_key="users.id", index=True)
+    display_name: str = Field(sa_type=String(200))
+    role: str = Field(default="Collaborator", sa_type=String(100))
+    momo_number: str = Field(default="", sa_type=String(32))
+    share_percent: Decimal = Field(ge=0, le=100, sa_type=Numeric(5, 2))
+    signed_at: datetime | None = Field(default=None, sa_type=DateTime(timezone=True))
